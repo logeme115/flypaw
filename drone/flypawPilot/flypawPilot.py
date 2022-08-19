@@ -390,7 +390,7 @@ class FlyPawPilot(StateMachine):
 
         else:
             #if you have comms and the basestation is the leader, ask what to do
-            self.nextStates = self.instructionRequest()
+            self.nextStates = self.instructionRequest(drone)
             #if you don't have any instructions figure it out for yourself
             if not self.nextStates:
                 self.nextStates = getEntryMissionActions(self.missions[0].missionType)
