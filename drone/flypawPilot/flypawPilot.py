@@ -524,11 +524,11 @@ class FlyPawPilot(StateMachine):
                 if (address[0] == "external"):
                     externalIP = address[1]
             if externalIP is not None:
-                await iperfResult = self.runIperf(externalIP)
+                iperfResult = await self.runIperf(externalIP)
                 iperfObjArr.append(iperfResult['iperfResults'])
 
         #once in your current orientation
-        await iperfResult = self.runIperf(self.basestationIP)
+        iperfResult = await self.runIperf(self.basestationIP)
         iperfObjArr.append(iperfResult['iperfResults'])
 
         #now yaw toward the radio and do it again
@@ -536,7 +536,7 @@ class FlyPawPilot(StateMachine):
         bearing_to_radio = geodesic_azi.get('azi1') 
         drone.set_heading(bearing_to_radio)
         #now toward the radio                                                                                                                
-        await iperfResult = self.runIperf(self.basestationIP)
+        iperfResult = await self.runIperf(self.basestationIP)
         iperfObjArr.append(iperfResult['iperfResults'])
         
         #at the end append all the individual iperf results to the self array
