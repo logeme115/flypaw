@@ -136,6 +136,14 @@ class taskedWaypoint(object):
 
 class RadioMap(object):
     def __init__(self):
-        self.positions = []
+        self.lats = []
+        self.lons = []
         self.headings = []
-        self.strength = []
+        self.dataRate = []
+        self.length = 0
+    def add(self, lat, lon, heading, rate):
+        self.lats.append(lat)
+        self.lons.append(lon)
+        self.headings.append(heading)
+        self.dataRate.append(rate)
+        self.length = self.length + 1

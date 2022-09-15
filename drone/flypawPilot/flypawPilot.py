@@ -4,6 +4,7 @@ import json
 import time
 import sys
 import os
+from ...basestation.basestationAgent.flypawClasses import RadioMap
 import iperf3
 import socket
 import pickle
@@ -53,6 +54,7 @@ class FlyPawPilot(StateMachine):
         self.prometheusQueryURL = "http://" + self.basestationIP + ":9090/api/v1/query?query=" 
         #frame can be used for sendVideo or sendFrame depending on mission type
         self.frame = 1
+        self.radioMap = RadioMap()
 
         #eNB location
         self.radio['lat'] = 35.72744
@@ -526,14 +528,20 @@ class FlyPawPilot(StateMachine):
         #now yaw toward the radio and do it again
         geodesic_azi = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'], 512)
         bearing_to_radio = geodesic_azi.get('azi1')
-        print("set bearing to " + str(bearing_to_radio))
-        await drone.set_heading(bearing_to_radio)
-        print("bearing set, now run iperf again")
+        #print("set bearing to " + str(bearing_to_radio))
+        #await drone.set_heading(bearing_to_radio)
+        #print("bearing set, now run iperf again")
         #now toward the radio                                                                                                                
-        iperfResult = await self.runIperf(self.basestationIP, drone)
-        print("second iperf result finished")
-        print(iperfResult['iperfResults'])
+        #iperfResult = await self.runIperf(self.basestationIP, drone)
+        #print("second iperf result finished")
+        #print(iperfResult['iperfResults'])
         iperfObjArr.append(iperfResult['iperfResults'])
+        #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
+        currentPosition = getCurrentPosition(drone)
+        drone.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['mbps'])
+        #drone.radioMap.lats = currentPosition['lat']
+        print("RadioMapLength:")
+        print(drone.radioMap.length)
         
         #at the end append all the individual iperf results to the self array
         self.currentIperfObjArr.append(iperfObjArr)
