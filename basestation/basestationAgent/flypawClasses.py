@@ -79,6 +79,7 @@ class missionInfo(object):
     #we'll have to think this through for different mission types
     def __init__(self):
         self.defaultWaypoints = [] #planfile
+        self.tasks = []#tasks associated with each waypoint
         self.missionType = str #videography, delivery, air taxi, etc.
         self.missionLeader = str #basestation, drone, cloud, edge device(s)
         self.priority = float #normalized float from 0-1
@@ -125,3 +126,16 @@ class droneSim(object):
         self.battery = Battery()
         self.heading = float
         self.home = []
+
+
+class taskedWaypoint(object):
+    def __init__(self):
+        self.position = Position()
+        self.task = str
+        self.TimeSensitive = bool
+
+class RadioMap(object):
+    def __init__(self):
+        self.positions = []
+        self.headings = []
+        self.strength = []
