@@ -537,7 +537,7 @@ class FlyPawPilot(StateMachine):
         iperfObjArr.append(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
-        self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['mbps'])
+        self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
         #drone.radioMap.lats = currentPosition['lat']
         print("RadioMapLength:")
         print(self.radioMap.length)
