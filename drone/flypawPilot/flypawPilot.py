@@ -4,7 +4,6 @@ import json
 import time
 import sys
 import os
-from ...basestation.basestationAgent.flypawClasses import RadioMap
 import iperf3
 import socket
 import pickle
@@ -26,8 +25,8 @@ from aerpawlib.util import VectorNED, Coordinate
 from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
-sys.path.append('/root/elyons/flypaw/basestation/basestationAgent')
-from flypawClasses import resourceInfo, missionInfo, Position, Battery
+sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
+from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap
 #import flypawClasses
 
 class FlyPawPilot(StateMachine):
@@ -538,10 +537,10 @@ class FlyPawPilot(StateMachine):
         iperfObjArr.append(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
-        drone.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['mbps'])
+        self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['mbps'])
         #drone.radioMap.lats = currentPosition['lat']
         print("RadioMapLength:")
-        print(drone.radioMap.length)
+        print(self.radioMap.length)
         
         #at the end append all the individual iperf results to the self array
         self.currentIperfObjArr.append(iperfObjArr)
