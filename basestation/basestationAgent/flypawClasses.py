@@ -154,6 +154,8 @@ class TaskQueue(object):
     def PrintQ(self):
         for task in self.queue:
             print(task.position.lat)
+            print(task.position.lon)
+            
 
 
 
