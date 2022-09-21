@@ -153,7 +153,7 @@ class TaskQueue(object):
         self.queue = []
     def PrintQ(self):
         for task in self.queue:
-            print(task.Position.lat)
+            print(task.position.lat)
 
 
 
