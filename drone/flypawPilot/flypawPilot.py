@@ -274,6 +274,7 @@ class FlyPawPilot(StateMachine):
 
         
         #check start time of mission, check current time, sleep diff
+        #something here is not behaving as expected
         if not drone.armed:
             print("drone not armed. Arming")
             await drone.set_armed(True)
@@ -310,6 +311,15 @@ class FlyPawPilot(StateMachine):
         self.currentWaypointIndex = 1
         return "waypoint_entry"
 
+
+
+
+
+
+
+
+
+
     @state(name="waypoint_entry")
     async def waypoint_entry(self, drone: Drone):
         """
@@ -324,7 +334,7 @@ class FlyPawPilot(StateMachine):
         while True:
             print("get position.  Attempt: " + str(statusAttempt))
             self.currentPosition = getCurrentPosition(drone)
-            if not checkPosition(self.currentPosition):
+            if not checkPosition(self.currentPosition):#need to understand what this function does
                 if statusAttempt > statusAttempts:
                     #GPS does not seem to be working... try to go home
                     print("Can't query position.  Abort")
@@ -387,7 +397,7 @@ class FlyPawPilot(StateMachine):
         #check for mission actions to be performed at the start of this state
         #if the drone is the mission leader, or there's no comms to the basestation
         if not self.communications['reportPositionUDP'] or self.missions[0].missionLeader == "drone":
-            self.nextStates = getEntryMissionActions(self.missions[0].missionType)
+            self.nextStates = getEntryMissionActions(self.missions[0].missionType)#
 
         else:
             #if you have comms and the basestation is the leader, ask what to do
@@ -398,9 +408,90 @@ class FlyPawPilot(StateMachine):
                 print("no answer... we're on our own")
                 self.nextStates = getEntryMissionActions(self.missions[0].missionType)
 
-        return "nextAction"
+        #return "nextAction"
+                #check to see if we have anything else pending to do                                                                                                                         
+        logState(self.logfiles['state'], "nextAction")
+        if self.nextStates:
+            print("we have states pending")
+            while self.nextStates:
+                reqIsValid = validateRequest(self.nextStates[0])
+                if not reqIsValid:
+                    print("state: " + self.nextStates[0] + " is not valid")
+                    self.nextStates.pop(0)
+                else:
+                    print("state: " + self.nextStates[0] + " is valid")
+                    nextState = self.nextStates[0]
+                    
+                    self.nextStates.pop(0)
+                    return nextState
+                
+        #nothing pending
+        #if basestation or cloud is the leader, return instruction request as default
+
+        if self.missions:
+            if self.missions[0].missionLeader == "basestation" or self.missions[0].missionLeader == "cloud":
+                self.nextStates = await self.instructionRequest()
+                if not self.nextStates:
+                    #if you get nothing back just fly
+                    return "flight"
+                    
+        #if drone is the missionLeader, return flight
+        return "flight"
         
-        
+
+
+
+
+
+
+
+
+    @state(name="nextAction")
+    async def nextAction(self, _ ):
+        #check to see if we have anything else pending to do                                                                                                                         
+        logState(self.logfiles['state'], "nextAction")
+        if self.nextStates:
+            print("we have states pending")
+            while self.nextStates:
+                reqIsValid = validateRequest(self.nextStates[0])
+                if not reqIsValid:
+                    print("state: " + self.nextStates[0] + " is not valid")
+                    self.nextStates.pop(0)
+                else:
+                    print("state: " + self.nextStates[0] + " is valid")
+                    nextState = self.nextStates[0]
+                    
+                    self.nextStates.pop(0)
+                    return nextState
+                
+        #nothing pending
+        #if basestation or cloud is the leader, return instruction request as default
+
+        if self.missions:
+            if self.missions[0].missionLeader == "basestation" or self.missions[0].missionLeader == "cloud":
+                self.nextStates = await self.instructionRequest()
+                if not self.nextStates:
+                    #if you get nothing back just fly
+                    return "flight"
+                    
+        #if drone is the missionLeader, return flight
+        return "flight"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     @state(name="flight")
     async def flight(self, drone: Drone):
         logState(self.logfiles['state'], "flight")
@@ -707,36 +798,7 @@ class FlyPawPilot(StateMachine):
         print("exiting")
         sys.exit()
         
-    @state(name="nextAction")
-    async def nextAction(self, _ ):
-        #check to see if we have anything else pending to do                                                                                                                         
-        logState(self.logfiles['state'], "nextAction")
-        if self.nextStates:
-            print("we have states pending")
-            while self.nextStates:
-                reqIsValid = validateRequest(self.nextStates[0])
-                if not reqIsValid:
-                    print("state: " + self.nextStates[0] + " is not valid")
-                    self.nextStates.pop(0)
-                else:
-                    print("state: " + self.nextStates[0] + " is valid")
-                    nextState = self.nextStates[0]
-                    
-                    self.nextStates.pop(0)
-                    return nextState
-                
-        #nothing pending
-        #if basestation or cloud is the leader, return instruction request as default
 
-        if self.missions:
-            if self.missions[0].missionLeader == "basestation" or self.missions[0].missionLeader == "cloud":
-                self.nextStates = await self.instructionRequest()
-                if not self.nextStates:
-                    #if you get nothing back just fly
-                    return "flight"
-                    
-        #if drone is the missionLeader, return flight
-        return "flight"
     
     async def runIperf(self, ipaddr, drone: Drone):
         x = uuid.uuid4()
