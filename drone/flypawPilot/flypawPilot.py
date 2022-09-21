@@ -872,7 +872,6 @@ class FlyPawPilot(StateMachine):
         return msg
 
     def processMissions(self):
-        t = Task()
         if self.missions :
             x = 0
             for mission in self.missions:
