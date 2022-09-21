@@ -266,8 +266,11 @@ class FlyPawBasestationAgent(object):
             self.cloud_mgr = Controller(config_file_location="./config.yml")
         else:
             self.cloud_mgr = None
+        print("Mission Start:-------------")
         print(str(self.missions[0]))
-            
+        print("Mission End:---------------")
+
+
     def update_digital_twin(self):
         """
         function call to update the digital twin with different types of incoming data   
