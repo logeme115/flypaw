@@ -55,7 +55,7 @@ class FlyPawPilot(StateMachine):
         #frame can be used for sendVideo or sendFrame depending on mission type
         self.frame = 1
         self.radioMap = RadioMap()
-        self.tasks = TaskQueue()
+        self.taskQ = TaskQueue()
 
         #eNB location
         self.radio['lat'] = 35.72744
@@ -152,7 +152,7 @@ class FlyPawPilot(StateMachine):
         """
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
         self.processMissions()
-        self.tasks.PrintQ()
+        self.taskQ.PrintQ()
         
         if not self.missions:
             print("No assignment... will check again in 2 seconds")
@@ -879,7 +879,7 @@ class FlyPawPilot(StateMachine):
                     position = Position()
                     position.InitParams(waypoint[0],waypoint[1],0,0,0,0)
                     t = Task(position,"FLIGHT",0,0)
-                    tasks.queue.append(t)
+                    self.taskQ.queue.append(t)
             return 1
         else:
             return 0
