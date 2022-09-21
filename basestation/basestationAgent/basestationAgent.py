@@ -266,9 +266,7 @@ class FlyPawBasestationAgent(object):
             self.cloud_mgr = Controller(config_file_location="./config.yml")
         else:
             self.cloud_mgr = None
-        print("Mission Start:-------------")
-        print((self.missions[0].default_waypoints))
-        print("Mission End:---------------")
+
 
 
     def update_digital_twin(self):
