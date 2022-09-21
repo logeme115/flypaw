@@ -152,7 +152,7 @@ class FlyPawPilot(StateMachine):
         """
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
         self.processMissions()
-        self.Tasks.PrintQ()
+        self.tasks.PrintQ()
         
         if not self.missions:
             print("No assignment... will check again in 2 seconds")
