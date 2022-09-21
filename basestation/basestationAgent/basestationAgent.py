@@ -267,7 +267,7 @@ class FlyPawBasestationAgent(object):
         else:
             self.cloud_mgr = None
         print("Mission Start:-------------")
-        print(pickle.dump((self.missions[0])))
+        print(pickle.dump((self.missions[0].name)))
         print("Mission End:---------------")
 
 
