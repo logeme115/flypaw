@@ -17,7 +17,7 @@ class Position(object):
         self.time = str
         self.fix_type = int
         self.satellites_visible = int
-    def __init__(self,lon,lat,alt,time,fix,satellites):
+    def InitParams(self,lon,lat,alt,time,fix,satellites):
         self.lon = float
         self.lat = float
         self.alt = float
