@@ -266,6 +266,7 @@ class FlyPawBasestationAgent(object):
             self.cloud_mgr = Controller(config_file_location="./config.yml")
         else:
             self.cloud_mgr = None
+        print(str(self.missions[0]))
             
     def update_digital_twin(self):
         """
