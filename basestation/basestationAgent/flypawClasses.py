@@ -17,6 +17,13 @@ class Position(object):
         self.time = str
         self.fix_type = int
         self.satellites_visible = int
+    def __init__(self,lon,lat,alt,time,fix,satellites):
+        self.lon = float
+        self.lat = float
+        self.alt = float
+        self.time = str
+        self.fix_type = int
+        self.satellites_visible = int
 
 class Battery(object):
     """
@@ -133,6 +140,23 @@ class taskedWaypoint(object):
         self.position = Position()
         self.task = str
         self.TimeSensitive = bool
+
+class Task(object):
+    def __init__(self, pos,task,sensitive,prio):
+        self.position = pos
+        self.task = task
+        self.TimeSensitive = sensitive
+        self.priority = prio
+
+class TaskQueue(object):
+    def __init__(self):
+        self.queue = []
+    def PrintQ(self):
+        for task in self.queue:
+            print(task.Position.lat)
+
+
+
 
 class RadioMap(object):
     def __init__(self):

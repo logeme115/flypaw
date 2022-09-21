@@ -1,9 +1,11 @@
+from asyncio import tasks
 import requests
 import json
 #import geojson
 import time
 import sys
 import os
+from basestation.basestationAgent.flypawClasses import TaskQueue
 import iperf3
 import socket
 import pickle
@@ -26,7 +28,7 @@ from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
 sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
-from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap
+from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task
 #import flypawClasses
 
 class FlyPawPilot(StateMachine):
@@ -54,6 +56,7 @@ class FlyPawPilot(StateMachine):
         #frame can be used for sendVideo or sendFrame depending on mission type
         self.frame = 1
         self.radioMap = RadioMap()
+        self.tasks = TaskQueue()
 
         #eNB location
         self.radio['lat'] = 35.72744
@@ -149,6 +152,8 @@ class FlyPawPilot(StateMachine):
         TBD--> develop high level mission overview checks
         """
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
+        self.processMissions()
+        self.Tasks.PrintQ()
         
         if not self.missions:
             print("No assignment... will check again in 2 seconds")
@@ -226,7 +231,7 @@ class FlyPawPilot(StateMachine):
         #likely a lot more to check... 
 
         #ok, try to accept mission
-        print("accepting mission... this can take up to 20 minutes to get confirmation while cloud resources are reserved")
+        print("accepting mission")
         missionAccepted = acceptMission(self.basestationIP, self.missions[0])
         if missionAccepted:
             print (self.missions[0].missionType + " mission accepted")
@@ -331,7 +336,7 @@ class FlyPawPilot(StateMachine):
         #update position and battery and gps and heading
         statusAttempts = 5
         statusAttempt = 0
-        while True:
+        while True: # Verifies gps is operating 
             print("get position.  Attempt: " + str(statusAttempt))
             self.currentPosition = getCurrentPosition(drone)
             if not checkPosition(self.currentPosition):#need to understand what this function does
@@ -351,7 +356,7 @@ class FlyPawPilot(StateMachine):
                 statusAttempt = 0
                 break
                
-        while True:
+        while True: # Attempts to assess the battery
             print("check battery.  Attempt: " + str(statusAttempt))
             self.currentBattery = getCurrentBattery(drone)
             if self.currentBattery is None:
@@ -408,8 +413,14 @@ class FlyPawPilot(StateMachine):
                 print("no answer... we're on our own")
                 self.nextStates = getEntryMissionActions(self.missions[0].missionType)
 
-        #return "nextAction"
-                #check to see if we have anything else pending to do                                                                                                                         
+
+
+
+
+        #old divide between waypoint entry and nextAction
+        # 
+        # 
+        #                                                                                                                
         logState(self.logfiles['state'], "nextAction")
         if self.nextStates:
             print("we have states pending")
@@ -860,6 +871,23 @@ class FlyPawPilot(StateMachine):
         #delete the iperf3 client to avoid errors
         del client
         return msg
+
+    def processMissions(self):
+        t = Task()
+        if self.missions :
+            x = 0
+            for mission in self.missions:
+                for waypoint in mission.default_waypoints:
+                    position = Position(waypoint[0],waypoint[1],0,0,0,0)
+                    t = Task(position,"FLIGHT",0,0)
+                    tasks.queue.append(t)
+            return 1
+        else:
+            return 0
+
+
+
+
         
     async def reportPositionUDP(self):
         print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
