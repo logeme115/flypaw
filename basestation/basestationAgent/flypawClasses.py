@@ -151,10 +151,10 @@ class Task(object):
 class TaskQueue(object):
     def __init__(self):
         self.queue = []
-    def PrintQ(self):
+    def PrintQ(self):#change this to lower case please
         for task in self.queue:
-            print(task.position.lat)
-            print(task.position.lon)
+            print(str(task.position.lat))
+            print(str(task.position.lon))
             
 
 
