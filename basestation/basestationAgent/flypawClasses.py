@@ -18,12 +18,12 @@ class Position(object):
         self.fix_type = int
         self.satellites_visible = int
     def InitParams(self,lon,lat,alt,time,fix,satellites):
-        self.lon = float
-        self.lat = float
-        self.alt = float
-        self.time = str
-        self.fix_type = int
-        self.satellites_visible = int
+        self.lon = lon
+        self.lat = lat
+        self.alt = alt
+        self.time = time
+        self.fix_type = fix
+        self.satellites_visible = satellites
 
 class Battery(object):
     """
