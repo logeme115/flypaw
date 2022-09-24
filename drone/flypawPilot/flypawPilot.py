@@ -407,7 +407,7 @@ class FlyPawPilot(StateMachine):
         self.CurrentTask = self.taskQ.PopTask()
         
        
-        if self.CurrentTask.Task == "ABORT":
+        if self.CurrentTask.task == "ABORT":
             return "abortMission"
         return "action"
 
