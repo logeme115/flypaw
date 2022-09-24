@@ -168,12 +168,15 @@ class FlyPawPilot(StateMachine):
             #time.sleep(2)
             return "preflight"
         else:
+            """
             print("number of missions: " + str(len(self.missions)))
             for thisMission in self.missions:
                 print("mission type: " + thisMission.missionType + " leader: " + thisMission.missionLeader + " priority: " + str(thisMission.priority))
                 #print out waypoints
                 for waypoint in thisMission.default_waypoints:
                     print (str(waypoint[1]) + " " + str(waypoint[0]) + " " + str(waypoint[2]))
+            """
+
                     
         """
         Home Check
@@ -342,7 +345,8 @@ class FlyPawPilot(StateMachine):
         statusAttempts = 5
         statusAttempt = 0
         while True: # Verifies gps is operating 
-            print("get position.  Attempt: " + str(statusAttempt))
+            #print("Get position.  Attempt: " + str(statusAttempt))
+            print("Verify GPS...")
             self.currentPosition = getCurrentPosition(drone)
             if not checkPosition(self.currentPosition):#need to understand what this function does
                 if statusAttempt > statusAttempts:
@@ -357,12 +361,13 @@ class FlyPawPilot(StateMachine):
                     time.sleep(1)
             else:
                 #position seems fine
-                print("position is communicating")
+                print("...GPS Verified")
                 statusAttempt = 0
                 break
                
         while True: # Attempts to assess the battery
-            print("check battery.  Attempt: " + str(statusAttempt))
+            #print("Check battery.  Attempt: " + str(statusAttempt))
+            print("Check battery...")
             self.currentBattery = getCurrentBattery(drone)
             if self.currentBattery is None:
                 if statusAttempt > statusAttempts:
@@ -377,14 +382,14 @@ class FlyPawPilot(StateMachine):
                     time.sleep(1)
             else:
                 #battery seems fine
-                print("battery is communicating")
+                print("...Battery is communicating")
                 statusAttempt = 0
                 break
 
-        print ("report telemetry and battery status")
+        print ("Reporting telemetry and battery status...")
         recv = await self.reportPositionUDP()
         if (recv):
-            print("report position to basestation confirmed")
+            print("...Report position to basestation confirmed")
             self.communications['reportPositionUDP'] = 1
         else:
             self.communications['reportPositionUDP'] = 0
@@ -398,7 +403,7 @@ class FlyPawPilot(StateMachine):
         #abort mission if Q is empty
         #print("TaskQ Size: " + str(self.taskQ.Count))
         if self.taskQ.Empty():
-            print("no more tasks... go home if not already there and land")  
+            print("no more tasks...Returning Home")  
             return "abortMission"
 
         
