@@ -396,7 +396,7 @@ class FlyPawPilot(StateMachine):
         self.EvaluateTaskQ()
 
         #abort mission if Q is empty
-        print("TaskQ Size: " + str(self.taskQ.Count))
+        #print("TaskQ Size: " + str(self.taskQ.Count))
         if self.taskQ.Empty():
             print("no more tasks... go home if not already there and land")  
             return "abortMission"
@@ -410,7 +410,7 @@ class FlyPawPilot(StateMachine):
         self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
         """
         self.CurrentTask = self.taskQ.PopTask()
-        print("Task: " + str(self.CurrentTask.task))
+        #print("Task: " + str(self.CurrentTask.task))
        
         if self.CurrentTask.task == "ABORT":
             return "abortMission"
@@ -818,7 +818,8 @@ class FlyPawPilot(StateMachine):
     #plans aborts
     # Evaluates Failed Tasks/ Incomplete tasks as well.
     #In future we will decide here which tasks can be run asynchronously
-    def EvaluateTaskQ(self): 
+    def EvaluateTaskQ(self):
+        self.taskQ.PrintQ() 
         x= 0
 
     #Should Validate the Task type exists

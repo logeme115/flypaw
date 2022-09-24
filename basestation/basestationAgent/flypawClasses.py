@@ -162,11 +162,14 @@ class TaskQueue(object):
             self.Count = self.Count-1 #Adjust count
             return self.queue.pop(self.Count)#Pop item at end of queue
     def PrintQ(self):#change this to lower case please
-        if len(self.queue) < 1:
+        if self.Empty():
             print("Empty!")
         else:
+            print("============")
             for idx, task in enumerate(self.queue):
-                print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+                print("|"+str(task.task).rjust(10," ")+"|")
+                #print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+            print("============")
     def Empty(self):
         if(self.Count == 0):
             return True
