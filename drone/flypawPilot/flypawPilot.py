@@ -57,7 +57,7 @@ class FlyPawPilot(StateMachine):
         self.frame = 1
         self.radioMap = RadioMap()
         self.taskQ = TaskQueue()
-        self.CurrentTask =  Task()
+        self.CurrentTask =  Task(0,0,0,0)
         self.ActionStatus = ""
 
 
