@@ -32,6 +32,7 @@ sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
 from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task
 #import flypawClasses
 
+
 class FlyPawPilot(StateMachine):
     def __init__(self):
         self.currentPosition = Position()
@@ -409,7 +410,7 @@ class FlyPawPilot(StateMachine):
         self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
         """
         self.CurrentTask = self.taskQ.PopTask()
-        print("Task: " + Str(self.CurrentTask.task))
+        print("Task: " + str(self.CurrentTask.task))
        
         if self.CurrentTask.task == "ABORT":
             return "abortMission"
