@@ -158,7 +158,7 @@ class TaskQueue(object):
         self.Count =  self.Count + 1
     def PrintQ(self):#change this to lower case please
         for idx, task in enumerate(self.queue):
-            print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.lon) )
+            print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
 
             
 
