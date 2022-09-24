@@ -346,7 +346,7 @@ class FlyPawPilot(StateMachine):
         statusAttempt = 0
         while True: # Verifies gps is operating 
             #print("Get position.  Attempt: " + str(statusAttempt))
-            print("Verify GPS...")
+            #print("Verify GPS...")
             self.currentPosition = getCurrentPosition(drone)
             if not checkPosition(self.currentPosition):#need to understand what this function does
                 if statusAttempt > statusAttempts:
@@ -367,7 +367,7 @@ class FlyPawPilot(StateMachine):
                
         while True: # Attempts to assess the battery
             #print("Check battery.  Attempt: " + str(statusAttempt))
-            print("Check battery...")
+            #print("Check battery...")
             self.currentBattery = getCurrentBattery(drone)
             if self.currentBattery is None:
                 if statusAttempt > statusAttempts:
@@ -403,7 +403,7 @@ class FlyPawPilot(StateMachine):
         #abort mission if Q is empty
         #print("TaskQ Size: " + str(self.taskQ.Count))
         if self.taskQ.Empty():
-            print("no more tasks...Returning Home")  
+            print("No more tasks...Returning Home")  
             return "abortMission"
 
         
@@ -846,7 +846,7 @@ class FlyPawPilot(StateMachine):
 
         
     async def reportPositionUDP(self):
-        print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
+        #print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
     
         x = uuid.uuid4()
         msg = {}
@@ -867,7 +867,7 @@ class FlyPawPilot(StateMachine):
         msg['telemetry']['nextWaypoint'] = self.nextWaypoint
 
         #log telemetry
-        print("logging telemetry")
+        #print("logging telemetry")
         
         teleJson = {}
         teleJson['position'] = {}
@@ -893,7 +893,7 @@ class FlyPawPilot(StateMachine):
             ofile.write(result_str)
             ofile.close()
         
-        print("sending telemetry")
+        #print("sending telemetry")
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             #print(serverReply) 
