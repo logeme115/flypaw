@@ -1,4 +1,5 @@
 from argparse import Action
+from ast import Str
 from asyncio import tasks
 import requests
 import json
@@ -394,9 +395,12 @@ class FlyPawPilot(StateMachine):
         self.EvaluateTaskQ()
 
         #abort mission if Q is empty
+        print("TaskQ Size: " + Str(self.taskQ.Count))
         if not self.taskQ:
             print("no more waypoints... go home if not already there and land")  
             return "abortMission"
+
+        
         """
         Old waypoint aqcuistion
         self.nextWaypoint = [] # just grabbing the next waypoint
@@ -405,7 +409,7 @@ class FlyPawPilot(StateMachine):
         self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
         """
         self.CurrentTask = self.taskQ.PopTask()
-        
+        print("Task: " + Str(self.CurrentTask.task))
        
         if self.CurrentTask.task == "ABORT":
             return "abortMission"
