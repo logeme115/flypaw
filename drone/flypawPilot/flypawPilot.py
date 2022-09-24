@@ -1,3 +1,4 @@
+from argparse import Action
 from asyncio import tasks
 import requests
 import json
@@ -56,6 +57,9 @@ class FlyPawPilot(StateMachine):
         self.frame = 1
         self.radioMap = RadioMap()
         self.taskQ = TaskQueue()
+        self.CurrentTask =  Task()
+        self.ActionStatus = ""
+
 
         #eNB location
         self.radio['lat'] = 35.72744
@@ -374,21 +378,7 @@ class FlyPawPilot(StateMachine):
                 print("battery is communicating")
                 statusAttempt = 0
                 break
-        
-        #self.currentAttitude = getCurrentAttitude(drone)
-        self.currentHeading = drone.heading
-        
 
-        #lets look at our next waypoint right away... don't love putting this here
-        if not len(self.missions[0].default_waypoints) > (self.currentWaypointIndex + 1):
-            print("no more waypoints... go home if not already there and land")  
-            return "abortMission"
-
-        self.nextWaypoint = []
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][0])
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][1])
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
-         
         print ("report telemetry and battery status")
         recv = await self.reportPositionUDP()
         if (recv):
@@ -397,56 +387,37 @@ class FlyPawPilot(StateMachine):
         else:
             self.communications['reportPositionUDP'] = 0
             print("no reply from server while transmitting position")
+        
+        #self.currentAttitude = getCurrentAttitude(drone)
+        self.currentHeading = drone.heading
+        
+        self.EvaluateTaskQ()
+
+        #abort mission if Q is empty
+        if not self.taskQ:
+            print("no more waypoints... go home if not already there and land")  
+            return "abortMission"
+        """
+        Old waypoint aqcuistion
+        self.nextWaypoint = [] # just grabbing the next waypoint
+        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][0])
+        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][1])
+        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
+        """
+        self.CurrentTask = self.taskQ.PopTask()
+        
        
-        #check for mission actions to be performed at the start of this state
-        #if the drone is the mission leader, or there's no comms to the basestation
-        if not self.communications['reportPositionUDP'] or self.missions[0].missionLeader == "drone":
-            self.nextStates = getEntryMissionActions(self.missions[0].missionType)#
+        if self.CurrentTask.Task == "ABORT":
+            return "abortMission"
+        return "action"
 
-        else:
-            #if you have comms and the basestation is the leader, ask what to do
-            print("asking what to do")
-            self.nextStates = await self.instructionRequest()
-            #if you don't have any instructions figure it out for yourself
-            if not self.nextStates:
-                print("no answer... we're on our own")
-                self.nextStates = getEntryMissionActions(self.missions[0].missionType)
+    @state(name="action") #This really seems like a stub...probably could move it 
+    async def action(self, _ ):
+        logState(self.logfiles['state'], "action")
+        state = self.ActionStateMap(self.CurrentTask.task)
+        return state
 
 
-
-
-
-        #old divide between waypoint entry and nextAction
-        # 
-        # 
-        #                                                                                                                
-        logState(self.logfiles['state'], "nextAction")
-        if self.nextStates:
-            print("we have states pending")
-            while self.nextStates:
-                reqIsValid = validateRequest(self.nextStates[0])
-                if not reqIsValid:
-                    print("state: " + self.nextStates[0] + " is not valid")
-                    self.nextStates.pop(0)
-                else:
-                    print("state: " + self.nextStates[0] + " is valid")
-                    nextState = self.nextStates[0]
-                    
-                    self.nextStates.pop(0)
-                    return nextState
-                
-        #nothing pending
-        #if basestation or cloud is the leader, return instruction request as default
-
-        if self.missions:
-            if self.missions[0].missionLeader == "basestation" or self.missions[0].missionLeader == "cloud":
-                self.nextStates = await self.instructionRequest()
-                if not self.nextStates:
-                    #if you get nothing back just fly
-                    return "flight"
-                    
-        #if drone is the missionLeader, return flight
-        return "flight"
         
 
 
@@ -456,36 +427,7 @@ class FlyPawPilot(StateMachine):
 
 
 
-    @state(name="nextAction")
-    async def nextAction(self, _ ):
-        #check to see if we have anything else pending to do                                                                                                                         
-        logState(self.logfiles['state'], "nextAction")
-        if self.nextStates:
-            print("we have states pending")
-            while self.nextStates:
-                reqIsValid = validateRequest(self.nextStates[0])
-                if not reqIsValid:
-                    print("state: " + self.nextStates[0] + " is not valid")
-                    self.nextStates.pop(0)
-                else:
-                    print("state: " + self.nextStates[0] + " is valid")
-                    nextState = self.nextStates[0]
-                    
-                    self.nextStates.pop(0)
-                    return nextState
-                
-        #nothing pending
-        #if basestation or cloud is the leader, return instruction request as default
 
-        if self.missions:
-            if self.missions[0].missionLeader == "basestation" or self.missions[0].missionLeader == "cloud":
-                self.nextStates = await self.instructionRequest()
-                if not self.nextStates:
-                    #if you get nothing back just fly
-                    return "flight"
-                    
-        #if drone is the missionLeader, return flight
-        return "flight"
 
 
 
@@ -505,7 +447,8 @@ class FlyPawPilot(StateMachine):
     @state(name="flight")
     async def flight(self, drone: Drone):
         logState(self.logfiles['state'], "flight")
-        #check if we have enough to go, at minimum, from here to the next default waypoint and to home
+        #flight shouldn't be making these evaluations
+        """
         print ("check for sufficient battery... note, no good way to do this yet, so it's a placeholder")
         if not len(self.missions[0].default_waypoints) > (self.currentWaypointIndex + 1):
             print("no more waypoints... go home if not already there and land")
@@ -518,46 +461,23 @@ class FlyPawPilot(StateMachine):
                 ofile.write("battery check fail.  Abort")
                 ofile.close()
             return "abortMission"
+        """
 
-        defaultNextCoord = Coordinate(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][1], self.missions[0].default_waypoints[self.currentWaypointIndex + 1][0], self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
+
+        defaultNextCoord = Coordinate(self.CurrentTask.pos.lat,self.CurrentTask.pos.lon,self.CurrentTask.pos.alt)
         
 
         ##set heading... unnecessary unless we want to have a heading other than the direction of motion 
         #drone.set_heading(bearing_from_here)
         
         await drone.goto_coordinates(defaultNextCoord)
-
+        self.ActionStatus = "SUCCESS"
         #if you are not using await above, delete this
-        self.currentWaypointIndex = self.currentWaypointIndex + 1
+
         
         """
-        below, implement things to do while flying... skip for now... might have to remove the await statement above to do this stuff
-        while True:
-            #perform mission stuff like iperf eventually, but here just track your progress                                                                           
-            while True:
-                self.currentPosition = getCurrentPosition(drone)
-                if not checkPosition(self.currentPosition):
-                    if statusAttempt > statusAttempts:
-	                #GPS does not seem to be working... try to go home               
-                        print("Can't query position.  Abort")
-                        return "abortMission"
-                    else:
-                        statusAttempt = statusAttempt + 1
-                        time.sleep(1)
-                else:
-                    #position seems fine                                                                                                                 
-                    statusAttempt = 0
-                    break
-            
-            geodesic_dx = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.missions[0].default_waypoints[self.currentWaypointIndex + 1][1], self.missions[0].default_waypoints[self.currentWaypointIndex + 1][0], 1025)
-            flight_dx_from_here = geodesic_dx.get('s12')
-            print(str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt))
-            #get within 5 meters?                                                                                                                                     
-            if flight_dx_from_here < 5:
-                print("arrived at initial waypoint")
-                self.currentWaypointIndex = self.currentWaypointIndex + 1
-                break
-            time.sleep(1)
+        implement things to do while flying... skip for now... might have to remove the await statement above to do this stuff
+
         """
         #you've arrived at your next waypoint
         return "waypoint_entry" 
@@ -883,6 +803,32 @@ class FlyPawPilot(StateMachine):
             return 1
         else:
             return 0
+
+
+
+
+    #This is a stub. It should be used to evaulate the taskQ. 
+    #Evaluate should look at the task view, and analyze taskQ for efficiency and practicality
+    # Should takes current drone status into account and rearrange/add tasks if needed.
+    #plans aborts
+    # Evaluates Failed Tasks/ Incomplete tasks as well.
+    #In future we will decide here which tasks can be run asynchronously
+    def EvaluateTaskQ(self): 
+        x= 0
+
+    #Should Validate the Task type exists
+    def ValidateTask(self,task:Task): 
+        x= 0
+        if task.task == "FLIGHT" : 
+            return True
+        return False
+
+    #We should build an action map that is imported--i.e. make it an external file of registered actions. The returned value should lead to the correct state.
+    def ActionStateMap(self,action):
+        if action == "FLIGHT":
+            return "flight"
+        else:
+            return "ERROR"
 
 
 
