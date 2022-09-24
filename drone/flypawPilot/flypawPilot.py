@@ -879,7 +879,7 @@ class FlyPawPilot(StateMachine):
                     position = Position()
                     position.InitParams(waypoint[0],waypoint[1],waypoint[2],0,0,0)
                     t = Task(position,"FLIGHT",0,0)
-                    self.taskQ.queue.append(t)
+                    self.taskQ.PushTask(t)
             return 1
         else:
             return 0
