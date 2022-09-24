@@ -464,7 +464,7 @@ class FlyPawPilot(StateMachine):
         """
 
 
-        defaultNextCoord = Coordinate(self.CurrentTask.pos.lat,self.CurrentTask.pos.lon,self.CurrentTask.pos.alt)
+        defaultNextCoord = Coordinate(self.CurrentTask.position.lat,self.CurrentTask.position.lon,self.CurrentTask.position.alt)
         
 
         ##set heading... unnecessary unless we want to have a heading other than the direction of motion 
