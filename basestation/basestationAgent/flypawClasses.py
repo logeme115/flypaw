@@ -165,11 +165,17 @@ class TaskQueue(object):
         if self.Empty():
             print("Empty!")
         else:
+            print("")
             print("============")
+            print("====TOP\u2193====")
             for idx, task in enumerate(self.queue):
                 print("|"+str(task.task).rjust(10," ")+"|")
                 #print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+            print("===BOTTOM===")
             print("============")
+            print("Count: "+ str(self.Count))
+            print("Next Task: " + str(task.task) + "Postion-- Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt))
+            print("")
     def Empty(self):
         if(self.Count == 0):
             return True
