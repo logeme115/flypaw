@@ -158,8 +158,8 @@ class TaskQueue(object):
         self.Count =  self.Count + 1
     def PopTask(self):
         if(self.queue):
-            self.count = self.count-1 #Adjust count
-            return self.queue.pop(self.count)#Pop item at end of queue
+            self.Count = self.Count-1 #Adjust count
+            return self.queue.pop(self.Count)#Pop item at end of queue
     def PrintQ(self):#change this to lower case please
         for idx, task in enumerate(self.queue):
             print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
