@@ -396,7 +396,7 @@ class FlyPawPilot(StateMachine):
         self.EvaluateTaskQ()
 
         #abort mission if Q is empty
-        print("TaskQ Size: " + Str(self.taskQ.Count))
+        print("TaskQ Size: " + str(self.taskQ.Count))
         if not self.taskQ:
             print("no more waypoints... go home if not already there and land")  
             return "abortMission"
