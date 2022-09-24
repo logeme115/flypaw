@@ -15,6 +15,34 @@ class RadioMap(object):
         self.dataRate.append(rate)
         self.length = self.length + 1
 
+class Task(object):
+    def __init__(self, pos,task,sensitive,prio):
+        self.position = pos
+        self.task = task
+        self.TimeSensitive = sensitive
+        self.priority = prio
+
+class TaskQueue(object):
+
+    def __init__(self):
+        self.queue = []
+        self.Count = 0
+    def PushTask(self, task:Task):
+        self.queue.insert(0,task)
+        self.Count =  self.Count + 1
+    def PopTask(self):
+        if(self.queue):
+            self.Count = self.Count-1 #Adjust count
+            return self.queue.pop(self.Count)#Pop item at end of queue
+    def PrintQ(self):#change this to lower case please
+        if len(self.queue) < 1:
+            print("Empty!")
+        else:
+            for idx, task in enumerate(self.queue):
+                print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+
+
+
 
 class Position(object):
     """
@@ -66,12 +94,12 @@ def runIperf():
 a = RadioMap()
 p = Position()
 p.InitParams(1,2,3,4,5,6)
-print("lon:")
-print(p.lon)
-a.add(1,2,3,4)
-a.add(4,3,2,1)
-print(a.lons)
-print(float(3))
-ret  = runIperf()
+t = Task(p,0,0,0)
+tq = TaskQueue()
+print("tq: "+ str(bool(tq)))
+tq.PrintQ()
+tq.PushTask(t)
+tq.PrintQ()
+print("tq: "+ str(bool(tq)))
 
 

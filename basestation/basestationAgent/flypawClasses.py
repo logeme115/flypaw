@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+from pickle import FALSE
 
 class Position(object):
     """
@@ -161,8 +162,16 @@ class TaskQueue(object):
             self.Count = self.Count-1 #Adjust count
             return self.queue.pop(self.Count)#Pop item at end of queue
     def PrintQ(self):#change this to lower case please
-        for idx, task in enumerate(self.queue):
-            print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+        if len(self.queue) < 1:
+            print("Empty!")
+        else:
+            for idx, task in enumerate(self.queue):
+                print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
+    def Empty(self):
+        if(self.Count == 0):
+            return True
+        elif(self.Count>0): 
+            return False
 
             
 
