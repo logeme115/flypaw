@@ -149,14 +149,17 @@ class Task(object):
         self.priority = prio
 
 class TaskQueue(object):
+
     def __init__(self):
         self.queue = []
+        self.Count = 0
+    def PushTask(self, task:Task):
+        self.queue.insert(0,task)
+        self.Count =  self.Count + 1
     def PrintQ(self):#change this to lower case please
-        print("TASKQ_PRINT_START")
-        for task in self.queue:
-            print(str(task.position.lat))
-            print(str(task.position.lon))
-        print("TASKQ_PRINT_END")
+        for idx, task in enumerate(self.queue):
+            print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.lon) )
+
             
 
 
