@@ -41,7 +41,7 @@ class FlyPawPilot(StateMachine):
         self.currentHome = None
         self.nextWaypoint = []
         self.previousSelfs = [] 
-        self.missions = []
+        self.missions = [] #This really needs to be an object!
         self.missionstate = None
         self.currentIperfObjArr = []
         self.communications = {}
@@ -160,7 +160,7 @@ class FlyPawPilot(StateMachine):
         self.processMissions()
         self.taskQ.PrintQ()
         
-        if not self.missions:
+        if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
             with open(self.logfiles['error'], "a") as ofile:
                 ofile.write("No assignment... will check again in 1 second")
