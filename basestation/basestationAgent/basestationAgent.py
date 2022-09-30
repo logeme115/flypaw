@@ -315,6 +315,7 @@ class FlyPawBasestationAgent(object):
         elif processedPlan['STATUS'] == "PROCESSED":
             mission.STATUS = "PROCESSED"
             mission.default_waypoints = processedPlan['default_waypoints']
+            mission.missionObjectives = processedPlan['objectives']
 
         mission.resources = False
         self.missions.append(mission)

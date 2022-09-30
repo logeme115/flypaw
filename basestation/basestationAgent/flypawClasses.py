@@ -96,6 +96,7 @@ class missionInfo(object):
         self.name = str #the name of the mission
         self.resources = bool #true-> outside resources/edge devices false-> just drone and basestation
         self.STATUS = str
+        self.missionObjectives = []
 
 class MissionObjective(object):
         def __init__(self,way,type,static):
