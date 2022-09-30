@@ -157,7 +157,7 @@ class FlyPawPilot(StateMachine):
         TBD--> develop high level mission overview checks
         """
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
-
+        print("preflight(): self.missions--"+str(self.missions))
         
         if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
