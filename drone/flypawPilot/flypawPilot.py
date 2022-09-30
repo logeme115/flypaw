@@ -915,7 +915,7 @@ def getMissions(basestationIP):
                 missions = serverReply['missions']
                 print("missionObjective Transfer Check: "+ str(serverReply['objectives']))  
                 return missions
-
+    print("NOOONE!")
     return None
 
 def getResourceInfo(basestationIP):
