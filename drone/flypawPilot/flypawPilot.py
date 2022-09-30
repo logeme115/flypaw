@@ -913,7 +913,7 @@ def getMissions(basestationIP):
             print(serverReply['type_received'] + " receipt confirmed by UUID")
             if 'missions' in serverReply:
                 missions = serverReply['missions']
-                print("missionObjective Transfer Check: "+ str(serverReply['objectives']))  
+                print("missionObjective Transfer Check: "+ str(missions[0].missionObjectives))  
                 return missions
     print("NOOONE!")
     return None
