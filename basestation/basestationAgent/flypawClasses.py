@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pickle import FALSE
-from turtle import position
+
 
 class Position(object):
     """
