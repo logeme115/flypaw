@@ -3,7 +3,6 @@ import socket
 import pickle
 import json
 from telnetlib import STATUS
-from basestation.basestationAgent.flypawClasses import Position
 import geojson as gj
 import sys
 import pytz
@@ -11,7 +10,7 @@ import requests
 import time
 from mobius.controller.controller import Controller
 
-from flypawClasses import iperfInfo, sendVideoInfo, sendFrameInfo, collectVideoInfo, flightInfo, missionInfo, resourceInfo, VehicleCommands, droneSim, MissionObjective
+from flypawClasses import iperfInfo, sendVideoInfo, sendFrameInfo, collectVideoInfo, flightInfo, missionInfo, resourceInfo, VehicleCommands, droneSim, MissionObjective, Position
 
 #from cloud_resources import CloudResources
 
