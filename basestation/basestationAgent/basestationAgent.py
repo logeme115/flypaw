@@ -494,6 +494,7 @@ class FlyPawBasestationAgent(object):
                             validMissions.append(ms)
                     
                     msgFromServer['missions'] = validMissions
+                    msgFromServer['objectives'] = self.mission.missionObjectives
                     
                 elif msgType == "acceptMission":
                     #if you have an outside connection only
