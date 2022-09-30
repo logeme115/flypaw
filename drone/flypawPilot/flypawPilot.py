@@ -47,7 +47,7 @@ class FlyPawPilot(StateMachine):
         self.communications = {}
         self.radio = {}
         self.resources = []
-        self.currentWaypointIndex = 0
+        self.currentWaypointIndex = 0 #deprecated!
         self.nextStates = []
         self.logfiles = {}
         self.videoLocation = "/root/video/video_diff_resolution/example1/video_1280_720.mpg"

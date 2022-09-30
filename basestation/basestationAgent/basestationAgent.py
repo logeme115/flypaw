@@ -194,7 +194,7 @@ def processPlan(plan):
     php = plan['mission']['plannedHomePosition']
 
     thisWaypoint = [php[1],php[0],0]
-    default_waypoints.append(thisWaypoint)
+    #default_waypoints.append(thisWaypoint)
     lastWaypoint = thisWaypoint
     if not 'items' in plan['mission']:
         print("No items")
@@ -207,7 +207,7 @@ def processPlan(plan):
                 thisWaypoint = [php[1],php[0],lastWaypoint[2]]
                 processedPlan['default_waypoints'] = default_waypoints
                 thisWaypoint = [php[1],php[0],0]
-                #default_waypoints.append(thisWaypoint)
+                default_waypoints.append(thisWaypoint)
         if 'params' in thisItem:
             if not len(thisItem['params']) == 7:
                 print("incorrect number of params")
