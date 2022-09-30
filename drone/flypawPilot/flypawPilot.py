@@ -914,6 +914,7 @@ def getMissions(basestationIP):
             print(serverReply['type_received'] + " receipt confirmed by UUID")
             if 'missions' in serverReply:
                 missions = serverReply['missions']
+                print("getMissions(): Print ret missions object--" + str(missions))
                 return missions
     print("returning none at getMissions()")
     return None
