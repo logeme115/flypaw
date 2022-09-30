@@ -156,6 +156,7 @@ class FlyPawPilot(StateMachine):
         Mission Check
         TBD--> develop high level mission overview checks
         """
+        print("preflight(): self.missionsPre get call--"+str(self.missions))
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
         print("preflight(): self.missions--"+str(self.missions))
         
