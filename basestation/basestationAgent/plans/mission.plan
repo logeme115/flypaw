@@ -15,6 +15,7 @@
         "hoverSpeed": 5,
         "items": [
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -34,6 +35,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -53,6 +55,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -72,6 +75,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -91,6 +95,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -110,6 +115,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -129,6 +135,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -148,6 +155,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -167,6 +175,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -186,6 +195,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -205,6 +215,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -224,6 +235,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -243,6 +255,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -262,6 +275,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -281,6 +295,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -300,6 +315,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -319,6 +335,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -338,6 +355,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -357,6 +375,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
@@ -376,6 +395,7 @@
                 "type": "SimpleItem"
             },
             {
+                "TASK" : "IPERF"
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,

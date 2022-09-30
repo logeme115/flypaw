@@ -106,7 +106,7 @@ class resourceInfo(object):
         self.state = str #resource reservation state
         self.load = float #placeholder for now... maybe if we have info from prometheus or something
     
-class VehicleCommands(object):
+class VehicleCommands(object):#This is like a task?
     def __init__(self):
         self.commands = {}
         self.commands['iperf'] = {}
