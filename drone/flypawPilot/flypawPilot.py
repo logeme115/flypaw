@@ -156,10 +156,7 @@ class FlyPawPilot(StateMachine):
         Mission Check
         TBD--> develop high level mission overview checks
         """
-        print("preflight(): self.missionsPre get call--"+str(self.missions))
-        self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
-        print("preflight(): self.missions--"+str(self.missions))
-        
+        self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions     
         if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
             with open(self.logfiles['error'], "a") as ofile:
@@ -915,9 +912,8 @@ def getMissions(basestationIP):
             print(serverReply['type_received'] + " receipt confirmed by UUID")
             if 'missions' in serverReply:
                 missions = serverReply['missions']
-                print("getMissions(): Print ret missions object--" + str(missions))
                 return missions
-    print("returning none at getMissions()")
+
     return None
 
 def getResourceInfo(basestationIP):
