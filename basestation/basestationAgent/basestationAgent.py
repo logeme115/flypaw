@@ -185,6 +185,9 @@ def getPlanFromPlanfile(filepath):
 def processPlan(plan):
     processedPlan = {}
     default_waypoints = []
+    if not plan['fileType'] == "TaskQ_Plan":
+        print("Wrong Plan file Format")
+        return None
     if not 'mission' in plan:
         print("No mission in planfile")
         return None
@@ -193,7 +196,7 @@ def processPlan(plan):
         return None
     php = plan['mission']['plannedHomePosition']
 
-    thisWaypoint = [php[1],php[0],0]
+    thisWaypoint = [php[1],php[0],0] #I don't want to append the the PLanned Home Position to the start anymore
     #default_waypoints.append(thisWaypoint)
     lastWaypoint = thisWaypoint
     if not 'items' in plan['mission']:
@@ -223,7 +226,9 @@ def processPlan(plan):
     print (default_waypoints)
     processedPlan['default_waypoints'] = default_waypoints
     return processedPlan
-
+"""
+Dont really need this function right now, but I am keeping it around incase I want to be able to accept QGroundMission as well
+"""
 def processPlan_QGROUND_STANDARD(plan):
     processedPlan = {}
     default_waypoints = []
