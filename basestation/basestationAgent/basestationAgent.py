@@ -3,6 +3,7 @@ import socket
 import pickle
 import json
 from telnetlib import STATUS
+from basestation.basestationAgent.flypawClasses import MissionObjective
 import geojson as gj
 import sys
 import pytz
@@ -185,6 +186,7 @@ def getPlanFromPlanfile(filepath):
 #This function processes the raw plan. It really should have a defined plan structure to pass to the Drone and back to the Main file...
 def processPlan(plan):
     processedPlan = {}
+    missionObjectives = []
     default_waypoints = []
     processedPlan['STATUS'] = "UNINITIALIZED" 
     if not plan['fileType'] == "TaskQ_Plan":
@@ -216,10 +218,13 @@ def processPlan(plan):
                     thisWaypoint[1] = lastWaypoint[1]
                 default_waypoints.append(thisWaypoint)
                 lastWaypoint = thisWaypoint
+                objective = MissionObjective(thisWaypoint,plan['mission'],False)
+                missionObjectives.append(objective)
 
     print (default_waypoints)
     processedPlan['default_waypoints'] = default_waypoints
     processedPlan["STATUS"] = "PROCESSED"
+    processedPlan["objectives"] = missionObjectives
     return processedPlan
 """
 Dont really need this function right now, but I am keeping it around incase I want to be able to accept QGroundMission as well-------------------------------

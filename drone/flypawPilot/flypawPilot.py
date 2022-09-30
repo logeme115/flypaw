@@ -156,7 +156,8 @@ class FlyPawPilot(StateMachine):
         Mission Check
         TBD--> develop high level mission overview checks
         """
-        self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions     
+        self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions   
+        print("missionObjective Transfer Check: "+ str(self.missions.missionObjectives))  
         if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
             with open(self.logfiles['error'], "a") as ofile:

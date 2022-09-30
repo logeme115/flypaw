@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pickle import FALSE
+from turtle import position
 
 class Position(object):
     """
@@ -95,6 +96,13 @@ class missionInfo(object):
         self.name = str #the name of the mission
         self.resources = bool #true-> outside resources/edge devices false-> just drone and basestation
         self.STATUS = str
+
+class MissionObjective(object):
+        def __init__(self,way,type,static):
+            self.Waypoint = way
+            self.Type = type
+            self.Static = static
+
         
 class resourceInfo(object):
     def __init__(self):
