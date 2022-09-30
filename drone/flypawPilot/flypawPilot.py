@@ -321,7 +321,7 @@ class FlyPawPilot(StateMachine):
         
         #you should be at default_waypoints[1] now
         #with [1] being directly above [0], which is the home position on the ground                                                                                              
-        self.currentWaypointIndex = 1
+        self.currentWaypointIndex = 0
         return "waypoint_entry"
 
 
