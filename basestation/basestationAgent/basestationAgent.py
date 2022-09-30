@@ -3,6 +3,7 @@ import socket
 import pickle
 import json
 from telnetlib import STATUS
+from basestation.basestationAgent.flypawClasses import Position
 import geojson as gj
 import sys
 import pytz
@@ -217,7 +218,9 @@ def processPlan(plan):
                     thisWaypoint[1] = lastWaypoint[1]
                 default_waypoints.append(thisWaypoint)
                 lastWaypoint = thisWaypoint
-                objective = MissionObjective(thisWaypoint,plan['mission'],False)
+                position = Position()
+                position.InitParams(thisWaypoint[0],thisWaypoint[1],thisWaypoint[2],0,0,0)
+                objective = MissionObjective(position,plan['mission'],False)
                 missionObjectives.append(objective)
 
     print (default_waypoints)
