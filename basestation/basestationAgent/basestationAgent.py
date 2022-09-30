@@ -2,6 +2,7 @@
 import socket
 import pickle
 import json
+from telnetlib import STATUS
 import geojson as gj
 import sys
 import pytz
@@ -181,19 +182,20 @@ def getPlanFromPlanfile(filepath):
     pathdata = json.load(f)
     f.close()
     return pathdata
-
+#This function processes the raw plan. It really should have a defined plan structure to pass to the Drone and back to the Main file...
 def processPlan(plan):
     processedPlan = {}
     default_waypoints = []
+    processedPlan['STATUS'] = "UNINITIALIZED" 
     if not plan['fileType'] == "TaskQ_Plan":
         print("Wrong Plan file Format")
-        return None
+        return processedPlan
     if not 'mission' in plan:
         print("No mission in planfile")
-        return None
+        return processedPlan
     if not 'plannedHomePosition' in plan['mission']:
         print("No planned home position")
-        return None
+        return processedPlan
     php = plan['mission']['plannedHomePosition']
 
     thisWaypoint = [php[1],php[0],0] #I don't want to append the the PLanned Home Position to the start anymore
@@ -201,7 +203,7 @@ def processPlan(plan):
     lastWaypoint = thisWaypoint
     if not 'items' in plan['mission']:
         print("No items")
-        return None
+        return processedPlan
     theseItems = plan['mission']['items']
     for thisItem in theseItems:
         if 'autocontinue' in thisItem:
@@ -225,15 +227,18 @@ def processPlan(plan):
 
     print (default_waypoints)
     processedPlan['default_waypoints'] = default_waypoints
+    processedPlan["STATUS"] = "PROCESSED"
     return processedPlan
 """
-Dont really need this function right now, but I am keeping it around incase I want to be able to accept QGroundMission as well
-"""
+Dont really need this function right now, but I am keeping it around incase I want to be able to accept QGroundMission as well-------------------------------
+
 def processPlan_QGROUND_STANDARD(plan):
     processedPlan = {}
+
     default_waypoints = []
     if not 'mission' in plan:
         print("No mission in planfile")
+
         return None
     if not 'plannedHomePosition' in plan['mission']:
         print("No planned home position")
@@ -270,7 +275,7 @@ def processPlan_QGROUND_STANDARD(plan):
     print (default_waypoints)
     processedPlan['default_waypoints'] = default_waypoints
     return processedPlan
-
+"""
 
 class FlyPawBasestationAgent(object):
     def __init__(self, ipaddr="172.16.0.1", port=20001, chunkSize=1024) :
@@ -307,7 +312,12 @@ class FlyPawBasestationAgent(object):
         mission.default_waypoints = []
         plan = getPlanFromPlanfile(mission.planfile)
         processedPlan = processPlan(plan)
-        mission.default_waypoints = processedPlan['default_waypoints']
+        if processedPlan['STATUS'] == "UNINITIALIZED":
+            mission.STATUS = "FAILED"
+        elif processedPlan['STATUS'] == "PROCESSED":
+            mission.STATUS = "PROCESSED"
+            mission.default_waypoints = processedPlan['default_waypoints']
+
         mission.resources = False
         self.missions.append(mission)
         if mission.resources:
@@ -478,7 +488,11 @@ class FlyPawBasestationAgent(object):
 
                 ##############check message type from drone and decide what to do###################
                 if msgType == "mission":
-                    msgFromServer['missions'] = self.missions
+                    validMissions = list
+                    for ms in self.missions:
+                        if ms.STATUS == "PROCESSED" :
+                            validMissions.append(ms)
+                    msgFromServer['missions'] = validMissions
                     
                 elif msgType == "acceptMission":
                     #if you have an outside connection only
@@ -648,6 +662,8 @@ class FlyPawBasestationAgent(object):
                 
             except pickle.UnpicklingError as upe:
                 print("cannot decode message from drone: " + upe)
+
+
 
 
 if __name__ == '__main__':

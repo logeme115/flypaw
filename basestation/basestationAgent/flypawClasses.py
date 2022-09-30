@@ -94,6 +94,7 @@ class missionInfo(object):
         self.planfile = str #path to planfile optional 
         self.name = str #the name of the mission
         self.resources = bool #true-> outside resources/edge devices false-> just drone and basestation
+        self.STATUS = str
         
 class resourceInfo(object):
     def __init__(self):

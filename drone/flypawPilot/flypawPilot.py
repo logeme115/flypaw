@@ -800,16 +800,16 @@ class FlyPawPilot(StateMachine):
         #delete the iperf3 client to avoid errors
         del client
         return msg
-
+    #I shouldn't be getting empty missions form the BaseStation
     def processMissions(self):
         if self.missions :
             x = 0
             for mission in self.missions:
-                for waypoint in mission.default_waypoints:
-                    position = Position()
-                    position.InitParams(waypoint[0],waypoint[1],waypoint[2],0,0,0)
-                    t = Task(position,"FLIGHT",0,0)
-                    self.taskQ.PushTask(t)
+                    for waypoint in mission.default_waypoints:
+                        position = Position()
+                        position.InitParams(waypoint[0],waypoint[1],waypoint[2],0,0,0)
+                        t = Task(position,"FLIGHT",0,0)
+                        self.taskQ.PushTask(t)
             return 1
         else:
             return 0
