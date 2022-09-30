@@ -915,6 +915,7 @@ def getMissions(basestationIP):
             if 'missions' in serverReply:
                 missions = serverReply['missions']
                 return missions
+    print("returning none at getMissions()")
     return None
 
 def getResourceInfo(basestationIP):
