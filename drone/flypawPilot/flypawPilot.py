@@ -157,8 +157,7 @@ class FlyPawPilot(StateMachine):
         TBD--> develop high level mission overview checks
         """
         self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions
-        self.processMissions()
-        self.taskQ.PrintQ()
+
         
         if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
@@ -168,14 +167,10 @@ class FlyPawPilot(StateMachine):
             #time.sleep(2)
             return "preflight"
         else:
-            """
             print("number of missions: " + str(len(self.missions)))
-            for thisMission in self.missions:
-                print("mission type: " + thisMission.missionType + " leader: " + thisMission.missionLeader + " priority: " + str(thisMission.priority))
-                #print out waypoints
-                for waypoint in thisMission.default_waypoints:
-                    print (str(waypoint[1]) + " " + str(waypoint[0]) + " " + str(waypoint[2]))
-            """
+            self.processMissions()
+            self.taskQ.PrintQ()
+            
 
                     
         """
