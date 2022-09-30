@@ -489,6 +489,7 @@ class FlyPawBasestationAgent(object):
                 ##############check message type from drone and decide what to do###################
                 if msgType == "mission":
                     validMissions = []
+                    print("Dispatcher-- mission check" + str(validMissions))
                     for ms in self.missions:
                         if ms.STATUS == "PROCESSED" :
                             validMissions.append(ms)
