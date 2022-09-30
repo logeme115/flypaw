@@ -1211,7 +1211,7 @@ def udpClientMsg(msg, address, port, timeout_in_seconds):
             print("timeout")
             return None
     except pickle.PicklingError as pe:
-        print(pe)
+        print("Pickle Error--" + pe)
         return None
 
 def udpFileSend(filename, address, port, buffersz):

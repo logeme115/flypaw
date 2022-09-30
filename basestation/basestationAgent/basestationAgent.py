@@ -658,6 +658,7 @@ class FlyPawBasestationAgent(object):
                     self.currentRequests.append(self.vehicleCommands.commands['flight'])
                 try: 
                     serialMsgFromServer = pickle.dumps(msgFromServer)
+                    print("Pickle Packet Size: " + str(len(pickle.dumps(msgFromServer),-1)))
                     UDPServerSocket.sendto(serialMsgFromServer, address)
                 except pickle.PicklingError as pe:
                     print ("cannot encode reply msg: " + pe)
