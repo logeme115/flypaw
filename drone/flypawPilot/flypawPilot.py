@@ -43,6 +43,7 @@ class FlyPawPilot(StateMachine):
         self.previousSelfs = [] 
         self.missions = [] #This really needs to be an object!
         self.missionstate = None
+        self.missionObjectives = []
         self.currentIperfObjArr = []
         self.communications = {}
         self.radio = {}
@@ -166,7 +167,7 @@ class FlyPawPilot(StateMachine):
             #time.sleep(2)
             return "preflight"
         else:
-            print("number of missions: " + str(len(self.missions)))
+            print("number of missions: " + str(len(self.missionsObjectives)))
             self.processMissions()
             self.taskQ.PrintQ()
             
@@ -795,7 +796,7 @@ class FlyPawPilot(StateMachine):
         del client
         return msg
     #I shouldn't be getting empty missions form the BaseStation
-    def processMissions(self):
+    def processMissionsOLD(self):
         if self.missions :
             x = 0
             for mission in self.missions:
@@ -804,6 +805,18 @@ class FlyPawPilot(StateMachine):
                         position.InitParams(waypoint[0],waypoint[1],waypoint[2],0,0,0)
                         t = Task(position,"FLIGHT",0,0)
                         self.taskQ.PushTask(t)
+            return 1
+        else:
+            return 0
+
+    def processMissions(self):
+        if self.missionObjectives :
+            x = 0
+            for missionObj in self.missionsObjective:
+                    
+                    
+                    t = Task(missionObj.Waypoint,"FLIGHT",0,0)
+                    self.taskQ.PushTask(t)
             return 1
         else:
             return 0
@@ -913,8 +926,10 @@ def getMissions(basestationIP):
             print(serverReply['type_received'] + " receipt confirmed by UUID")
             if 'missions' in serverReply:
                 missions = serverReply['missions']
-                print("missionObjective Transfer Check: "+ str(missions[0].missionObjectives))  
-                return missions
+                missionObjectives = missions[0].missionObjectives
+                #print("missionObjective Transfer Check: "+ str(missions[0].missionObjectives))  
+                
+                return missionObjectives
     print("NOOONE!")
     return None
 
