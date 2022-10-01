@@ -189,7 +189,7 @@ class FlyPawPilot(StateMachine):
         TBD--> A placeholder for future important concepts like weather checks and UVRs.  Traffic also checked with DCB later
         For now just use the first mission
         """
-        if not checkAirspace(self.missions[0].default_waypoints):
+        if not checkAirspace(0):#just a filler arg
             print("Airspace not fit for flying, check back later")
             with open(self.logfiles['error'], "a") as ofile:
                 ofile.write("Airspace not fit for flying, check back later")
@@ -297,9 +297,9 @@ class FlyPawPilot(StateMachine):
     async def takeoff(self, drone: Drone):
         print("takeoff")
         
-        #takeoff to height of the first waypoint or 25 meters, whichever is higher                                                                                                
-        if len(self.missions[0].default_waypoints) > 1:
-            target_alt = self.missions[0].default_waypoints[1][2]
+        #takeoff to height of the first waypoint or 25 meters, whichever is higher, this will not work as missions become more complex and may not have an asscociated height--takeoff needs a new standard...                                                                                          
+        if len(self.missions) > 1:
+            target_alt = self.missions[0].Waypoint.alt
         else:
             print("recheck your mission")
             with open(self.logfiles['error'], "a") as ofile:
