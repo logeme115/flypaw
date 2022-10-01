@@ -237,7 +237,7 @@ class FlyPawPilot(StateMachine):
         print("accepting mission")
         missionAccepted = acceptMission(self.basestationIP, self.missions[0])
         if missionAccepted:
-            print (str(self.missions[0].Type) + " mission accepted")
+            print ("Here it is"+  str(self.missions[0].Type) + " mission accepted")
             
             #check start time of mission
             #check current time
@@ -927,7 +927,7 @@ def getMissions(basestationIP):
             if 'missions' in serverReply:
                 missions = serverReply['missions']
                 missionObjectives = missions[0].missionObjectives
-                print("missionObjective Transfer Check: "+ len(missionObjectives))  
+                print("missionObjective Transfer Check: "+ str(missionObjectives))  
                 
                 return missionObjectives
     print("NOOONE!")
