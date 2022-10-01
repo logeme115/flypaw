@@ -237,7 +237,7 @@ class FlyPawPilot(StateMachine):
         print("accepting mission")
         missionAccepted = acceptMission(self.basestationIP, self.missions[0])
         if missionAccepted:
-            print (self.missions[0].Type + " mission accepted")
+            print (str(self.missions[0].Type) + " mission accepted")
             
             #check start time of mission
             #check current time
