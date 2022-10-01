@@ -219,7 +219,7 @@ def processPlan(plan):
                 lastWaypoint = thisWaypoint
                 position = Position()
                 position.InitParams(thisWaypoint[0],thisWaypoint[1],thisWaypoint[2],0,0,0)
-                objective = MissionObjective(position,thisItem.type,False)
+                objective = MissionObjective(position,thisItem['TASK'],False)
                 missionObjectives.append(objective)
 
     print (default_waypoints)
