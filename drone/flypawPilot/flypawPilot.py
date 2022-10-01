@@ -927,7 +927,7 @@ def getMissions(basestationIP):
             if 'missions' in serverReply:
                 missions = serverReply['missions']
                 missionObjectives = missions[0].missionObjectives
-                #print("missionObjective Transfer Check: "+ str(missions[0].missionObjectives))  
+                print("missionObjective Transfer Check: "+ len(missionObjectives))  
                 
                 return missionObjectives
     print("NOOONE!")
