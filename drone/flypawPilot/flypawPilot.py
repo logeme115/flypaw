@@ -29,7 +29,7 @@ from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
 sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
-from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task
+from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective
 #import flypawClasses
 
 
@@ -167,7 +167,7 @@ class FlyPawPilot(StateMachine):
             #time.sleep(2)
             return "preflight"
         else:
-            print("number of missions: " + str(len(self.missionsObjectives)))
+            print("number of missions: " + str(len(self.missionObjectives)))
             self.processMissions()
             self.taskQ.PrintQ()
             
@@ -814,7 +814,7 @@ class FlyPawPilot(StateMachine):
             x = 0
             for missionObj in self.missionsObjective:
                     
-                    
+
                     t = Task(missionObj.Waypoint,"FLIGHT",0,0)
                     self.taskQ.PushTask(t)
             return 1
