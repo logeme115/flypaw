@@ -538,17 +538,12 @@ class FlyPawPilot(StateMachine):
         print("starting iperf state")
         logState(self.logfiles['state'], "iperf")
         iperfObjArr = []
-        for resource in self.resources:
-            externalIP = None
-            for address in resource.resourceAddresses:
-                print("address type: " + address[0])
-                if (address[0] == "external"):
-                    externalIP = address[1]
-            if externalIP is not None:
-                iperfResult = await self.runIperf(externalIP, drone)
-                iperfObjArr.append(iperfResult['iperfResults'])
-        
 
+        
+        #run it once in your current orientation
+        iperfResult = await self.runIperf(self.basestationIP, drone)
+        print("iperf result finished")
+        print(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
         self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
@@ -557,7 +552,7 @@ class FlyPawPilot(StateMachine):
         print(self.radioMap.length)
         
         #at the end append all the individual iperf results to the self array
-
+        self.currentIperfObjArr.append(iperfObjArr)
         self.ActionStatus = "SUCCESS"
         return "waypoint_entry"
 
