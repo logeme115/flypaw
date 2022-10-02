@@ -554,6 +554,7 @@ class FlyPawPilot(StateMachine):
         #at the end append all the individual iperf results to the self array
         self.currentIperfObjArr.append(iperfObjArr)
         self.ActionStatus = "SUCCESS"
+        print("Returning to Dispatcher")
         return "waypoint_entry"
 
 
