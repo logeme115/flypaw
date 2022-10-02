@@ -533,8 +533,8 @@ class FlyPawPilot(StateMachine):
         self.currentIperfObjArr.append(iperfObjArr)
         self.ActionStatus = "SUCCESS"
         return "waypoint_entry"
-
-    @timed_state(name="iperf",duration = 20)
+    #IPERF CAN BE THIS QUICK, takes less than 3.5 sec
+    @timed_state(name="iperf",duration = 4)
     async def iperf(self, drone: Drone):
         print("starting iperf state")
         logState(self.logfiles['state'], "iperf")
