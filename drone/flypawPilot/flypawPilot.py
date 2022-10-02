@@ -810,9 +810,9 @@ class FlyPawPilot(StateMachine):
             return 0
 
     def processMissions(self):
-        if self.missionObjectives :
+        if self.missions :
             x = 0
-            for missionObj in self.missionsObjective:
+            for missionObj in self.missions:
                     
 
                     t = Task(missionObj.Waypoint,"FLIGHT",0,0)
