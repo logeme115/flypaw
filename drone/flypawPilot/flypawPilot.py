@@ -812,7 +812,7 @@ class FlyPawPilot(StateMachine):
             taskList.append(tasktemp)
         if objectiveType == "IPERF":
             taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
-            #taskList.append(Task(objective.Waypoint,"IPERF",0,0))
+            taskList.append(Task(objective.Waypoint,"IPERF",0,0))
 
         return taskList
 
