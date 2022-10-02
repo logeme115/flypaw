@@ -814,14 +814,30 @@ class FlyPawPilot(StateMachine):
             x = 0
             for missionObj in self.missions:
                     
+                    taskList = self.InterpretObjective(missionObj)
+                    for task in taskList:
+                        self.taskQ.PushTask(task)
+                    
 
-                    t = Task(missionObj.Waypoint,"FLIGHT",0,0)
-                    self.taskQ.PushTask(t)
             return 1
         else:
             return 0
 
+    #This function interprets mission objectives converting them into tasks. This should eveentually be called by EvaluateTaskQ as well.
+    def InterpretObjective(self, objective:MissionObjective):
+        x=0
+        taskList = []
+        objectiveType = objective.Type
+        if objectiveType == "FLIGHT":
+            tasktemp = Task(objective.Waypoint,"FLIGHT",0,0)
+            taskList.append(tasktemp)
+        if objectiveType == "IPERF":
+            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
+            #taskList.append(Task(objective.Waypoint,"IPERF",0,0))
 
+        return taskList
+
+            
 
 
     #This is a stub. It should be used to evaulate the taskQ. 
