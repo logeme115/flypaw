@@ -167,7 +167,7 @@ class FlyPawPilot(StateMachine):
             #time.sleep(2)
             return "preflight"
         else:
-            print("number of missions: " + str(len(self.missionObjectives)))
+            print("number of missions: " + str(len(self.missions)))
             self.processMissions()
             self.taskQ.PrintQ()
             
