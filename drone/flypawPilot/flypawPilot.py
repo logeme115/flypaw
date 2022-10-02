@@ -452,21 +452,7 @@ class FlyPawPilot(StateMachine):
     @state(name="flight")
     async def flight(self, drone: Drone):
         logState(self.logfiles['state'], "flight")
-        #flight shouldn't be making these evaluations
-        """
-        print ("check for sufficient battery... note, no good way to do this yet, so it's a placeholder")
-        if not len(self.missions[0].default_waypoints) > (self.currentWaypointIndex + 1):
-            print("no more waypoints... go home if not already there and land")
-            return "abortMission"
 
-        battery_check = checkBattery(self.currentBattery, self.currentPosition, self.currentHome, self.missions[0].default_waypoints[self.currentWaypointIndex + 1])
-        if not battery_check:
-            print("battery check fail")
-            with open(self.logfiles['error'], "a") as ofile:
-                ofile.write("battery check fail.  Abort")
-                ofile.close()
-            return "abortMission"
-        """
 
 
         defaultNextCoord = Coordinate(self.CurrentTask.position.lat,self.CurrentTask.position.lon,self.CurrentTask.position.alt)
@@ -477,14 +463,6 @@ class FlyPawPilot(StateMachine):
         
         await drone.goto_coordinates(defaultNextCoord)
         self.ActionStatus = "SUCCESS"
-        #if you are not using await above, delete this
-
-        
-        """
-        implement things to do while flying... skip for now... might have to remove the await statement above to do this stuff
-
-        """
-        #you've arrived at your next waypoint
         return "waypoint_entry" 
 
     @timed_state(name="instructionRequest", duration=1)
@@ -570,7 +548,8 @@ class FlyPawPilot(StateMachine):
         
         #at the end append all the individual iperf results to the self array
         self.currentIperfObjArr.append(iperfObjArr)
-        return "nextAction"
+        self.ActionStatus = "SUCCESS"
+        return "waypoint_entry"
 
     @state(name="sendFrame")
     async def sendFrame(self, _ ):
@@ -861,6 +840,8 @@ class FlyPawPilot(StateMachine):
     def ActionStateMap(self,action):
         if action == "FLIGHT":
             return "flight"
+        elif(action == "IPERF"):
+            return "iperf"
         else:
             return "ERROR"
 
