@@ -548,32 +548,12 @@ class FlyPawPilot(StateMachine):
                 iperfResult = await self.runIperf(externalIP, drone)
                 iperfObjArr.append(iperfResult['iperfResults'])
         
-        #run it once in your current orientation
-        iperfResult = await self.runIperf(self.basestationIP, drone)
-        print("iperf result finished")
-        print(iperfResult['iperfResults'])
-        iperfObjArr.append(iperfResult['iperfResults'])
 
-        #now yaw toward the radio and do it again
-        geodesic_azi = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'], 512)
-        bearing_to_radio = geodesic_azi.get('azi1')
-        #print("set bearing to " + str(bearing_to_radio))
-        #await drone.set_heading(bearing_to_radio)
-        #print("bearing set, now run iperf again")
-        #now toward the radio                                                                                                                
-        #iperfResult = await self.runIperf(self.basestationIP, drone)
-        #print("second iperf result finished")
-        #print(iperfResult['iperfResults'])
-        iperfObjArr.append(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
         self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
-        #drone.radioMap.lats = currentPosition['lat']
         print("RadioMapLength:")
         print(self.radioMap.length)
-        
-        #at the end append all the individual iperf results to the self array
-        self.currentIperfObjArr.append(iperfObjArr)
         self.ActionStatus = "SUCCESS"
         return "waypoint_entry"
 
