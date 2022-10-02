@@ -505,8 +505,9 @@ class FlyPawPilot(StateMachine):
                 iperfObjArr.append(iperfResult['iperfResults'])
         
         #run it once in your current orientation
+        print("Iperfcall--started")
         iperfResult = await self.runIperf(self.basestationIP, drone)
-        print("iperf result finished")
+        print("Iperfcall--finished")
         print(iperfResult['iperfResults'])
         iperfObjArr.append(iperfResult['iperfResults'])
 
