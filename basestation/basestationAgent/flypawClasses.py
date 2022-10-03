@@ -158,6 +158,7 @@ class Task(object):
         self.task = task
         self.TimeSensitive = sensitive
         self.priority = prio
+        self.comms_required = FALSE
 
 class TaskQueue(object):
 

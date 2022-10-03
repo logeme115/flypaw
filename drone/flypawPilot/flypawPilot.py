@@ -824,6 +824,12 @@ class FlyPawPilot(StateMachine):
         if objectiveType == "IPERF":
             taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
             taskList.append(Task(objective.Waypoint,"IPERF",0,0))
+        if objectiveType == "IMAGE_LOCATION_QUICK":
+            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
+            taskList.append(Task(objective.Waypoint,"IMAGE_SINGLE",0,0))
+            t = Task(objective.Waypoint,"SEND_DATA",0,0)
+            t.comms_required = True
+            taskList.append(t)
 
         return taskList
 
