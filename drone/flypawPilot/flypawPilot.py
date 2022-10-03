@@ -533,6 +533,9 @@ class FlyPawPilot(StateMachine):
         self.currentIperfObjArr.append(iperfObjArr)
         self.ActionStatus = "SUCCESS"
         return "waypoint_entry"
+
+
+
     #IPERF CAN BE THIS QUICK, takes less than 3.5 sec
     @timed_state(name="iperf",duration = 4)
     async def iperf(self, drone: Drone):
@@ -560,8 +563,16 @@ class FlyPawPilot(StateMachine):
         return "waypoint_entry"
 
 
-        
 
+    #This is where we will actuate Frame Capture, but for now it is a stub
+    @state(name="captureFrame_Single")
+    async def captureFrame_Single(self, _ ):
+        logState(self.logfiles['state'], "collectVideo")
+        x=0
+        return "waypoint_entry"
+
+        
+    #This is a placeholder for the SEND_DATA function-------------------
     @state(name="sendFrame")
     async def sendFrame(self, _ ):
         logState(self.logfiles['state'], "sendFrame")
@@ -626,7 +637,7 @@ class FlyPawPilot(StateMachine):
                 print(serverReply['uuid_received'])
                 if serverReply['uuid_received'] == str(x):
                     print(serverReply['type_received'] + " receipt confirmed by UUID")
-        return "nextAction"
+        return "waypoint_entry"
     
     @state(name="sendVideo")
     async def sendVideo(self, _ ):
@@ -859,6 +870,10 @@ class FlyPawPilot(StateMachine):
             return "flight"
         elif(action == "IPERF"):
             return "iperf"
+        elif(action == "IMAGE_SINGLE"):
+            return "captureFrame_Single"
+        elif(action == "SEND_DATA"):
+            return "sendFrame"
         else:
             return "ERROR"
 
