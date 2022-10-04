@@ -62,6 +62,7 @@ class FlyPawPilot(StateMachine):
         self.taskQ = TaskQueue()
         self.CurrentTask =  Task(0,0,0,0)
         self.ActionStatus = ""
+        self.Drone = None
 
 
         #eNB location
@@ -102,7 +103,7 @@ class FlyPawPilot(StateMachine):
         time.sleep(1)
         
         self.missionstate = "preflight"
-
+        self.Drone = drone
 
         ####Firstly some mission neutral hardware checks
         """
@@ -923,7 +924,7 @@ class FlyPawPilot(StateMachine):
 
         #Check if connection is needed
         print("EVALUATE!!!!")
-        iperfResult =  self.runIperfSync(self.basestationIP, Drone)
+        iperfResult =  self.runIperfSync(self.basestationIP, self.Drone)
         nextTask = self.taskQ.NextTask()
 
 
