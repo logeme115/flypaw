@@ -557,7 +557,7 @@ class FlyPawPilot(StateMachine):
         print(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
-        self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+        self.radioMap.Add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
         #drone.radioMap.lats = currentPosition['lat']
 
         
@@ -749,11 +749,11 @@ class FlyPawPilot(StateMachine):
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
         if distance_to_radio <150:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
-            self.radioMap.add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
             print("CONNECTION-GOOD!")
         else:
 
-            self.radioMap.add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
             self.communications['iperf'] = 0
             print("CONNECTION-BAD!")
             #BENCHMARK

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pickle import FALSE
+from geographiclib.geodesic import Geodesic
 
 
 class Position(object):
@@ -211,9 +212,33 @@ class RadioMap(object):
         self.headings = []
         self.dataRate = []
         self.length = 0
-    def add(self, lat, lon, heading, rate):
+        self.positions =[]
+    def Add(self, lat, lon, heading, rate):
         self.lats.append(lat)
         self.lons.append(lon)
         self.headings.append(heading)
         self.dataRate.append(rate)
         self.length = self.length + 1
+        pos = Position()
+        pos.InitParams(lon,lat,0,0,0,0)
+        self.positions.append(pos)
+
+
+    def FindClosestPointWithConnection(self,nextPoint,currentPosition,radioPosition):
+        geo = Geodesic.WGS84.Inverse(currentPosition.lat, currentPosition.lon, radioPosition.lat, radioPosition.lon)
+        distance_to_base = geo.get('s12')
+        minFlightDistance = distance_to_base
+        suggestedPositon = radioPosition
+
+        for idx, position in enumerate(self.positions) :
+            if(self.dataRate[idx]>0):
+
+                geo = Geodesic.WGS84.Inverse(currentPosition.lat, currentPosition.lon, position.lat, position.lon)
+                distance_to_drone = geo.get('s12')
+                if minFlightDistance>distance_to_drone :
+                    minFlightDistance = distance_to_drone
+                    suggestedPositon = position
+            
+
+        return suggestedPositon
+        
