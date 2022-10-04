@@ -575,6 +575,7 @@ class FlyPawPilot(StateMachine):
     async def captureFrame_Single(self, _ ):
         logState(self.logfiles['state'], "collectVideo")
         x=0
+        time.sleep(4)
         return "waypoint_entry"
 
         
@@ -583,6 +584,7 @@ class FlyPawPilot(StateMachine):
     async def sendFrame(self, _ ):
 
         logState(self.logfiles['state'], "sendFrame")
+        time.sleep(2.5)
         if (self.frame > 1401): #only because the test data has like 1450 frames
             self.frame = 1
         framestr = str(self.frame).zfill(7) + ".jpg"
@@ -748,9 +750,10 @@ class FlyPawPilot(StateMachine):
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
-        if distance_to_radio <300:
+        if distance_to_radio <150:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
             self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            print("RadioMapLength:"+ self.radioMap.length)
             print("CONNECTION-GOOD!")
         else:
 
@@ -961,12 +964,14 @@ class FlyPawPilot(StateMachine):
         print("EVALUATE!!!!")
         RadioConnectionWayPoint = Position()
         nextTask = self.taskQ.NextTask()
+        self.taskQ.PrintQ() 
         self.RadioEval_SIM()
         radioPosition = Position()
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
-        if(self.communications['iperf']==0):
+        if(self.communications['iperf']==0 & nextTask.comms_required):
             RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(self,None,self.currentPosition,radioPosition)
             self.taskQ.AppendTask(Task(RadioConnectionWayPoint,"FLIGHT",0,0))
+            print("No connection...queuing flight to connection returning to nearest point with connection!")
         #self._RADIO_STRENGTH_SIM()
 
 
@@ -978,7 +983,7 @@ class FlyPawPilot(StateMachine):
 
 
 
-        self.taskQ.PrintQ() 
+
         x= 0
 
     #Should Validate the Task type exists
