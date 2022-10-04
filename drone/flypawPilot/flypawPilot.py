@@ -1,6 +1,7 @@
 from argparse import Action
 from ast import Str
 from asyncio import tasks
+from turtle import position
 import requests
 import json
 #import geojson
@@ -747,7 +748,7 @@ class FlyPawPilot(StateMachine):
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
-        if distance_to_radio <150:
+        if distance_to_radio <300:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
             self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
             print("CONNECTION-GOOD!")
@@ -958,9 +959,14 @@ class FlyPawPilot(StateMachine):
 
         #Check if connection is needed
         print("EVALUATE!!!!")
-        
+        RadioConnectionWayPoint = Position()
         nextTask = self.taskQ.NextTask()
         self.RadioEval_SIM()
+        radioPosition = Position()
+        radioPosition.InitParams(self.radio['lon'], self.radio['loat'],0,0,0,0)
+        if(self.communications['iperf']==0):
+            RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(self,None,self.currentPosition,radioPosition)
+            self.taskQ.AppendTask(Task(RadioConnectionWayPoint,"FLIGHT",0,0))
         #self._RADIO_STRENGTH_SIM()
 
 

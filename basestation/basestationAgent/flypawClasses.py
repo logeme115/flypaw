@@ -159,7 +159,7 @@ class Task(object):
         self.task = task
         self.TimeSensitive = sensitive
         self.priority = prio
-        self.comms_required = FALSE
+        self.comms_required = False
 
 class TaskQueue(object):
 
@@ -199,6 +199,9 @@ class TaskQueue(object):
             return self.queue[self.Count-1]
         else:
             return False
+    def AppendTask(self,task):
+        self.queue.append(task)
+        self.Count =  self.Count + 1
 
             
 
