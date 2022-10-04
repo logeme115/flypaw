@@ -926,6 +926,10 @@ class FlyPawPilot(StateMachine):
         print("EVALUATE!!!!")
         iperfResult =  self.runIperfSync(self.basestationIP, self.Drone)
         nextTask = self.taskQ.NextTask()
+        connection = "no"
+        if self.communications['iperf']:
+            connection = "YES!!!"
+        print("Do we have connection?????????   "+ connection)
 
 
 
