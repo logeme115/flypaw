@@ -7,7 +7,6 @@ import json
 import time
 import sys
 import os
-from drone.flypawPilot.testPython import runIperf
 import iperf3
 import socket
 import pickle
