@@ -756,6 +756,7 @@ class FlyPawPilot(StateMachine):
             self.radioMap.add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
             self.communications['iperf'] = 0
             print("CONNECTION-BAD!")
+            #BENCHMARK
         
 
 
