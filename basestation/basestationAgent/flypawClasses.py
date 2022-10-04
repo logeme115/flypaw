@@ -194,7 +194,10 @@ class TaskQueue(object):
             return False
 
     def NextTask(self):
-        return self.queue[self.Count-1]
+        if not self.Empty:
+            return self.queue[self.Count-1]
+        else:
+            return False
 
             
 
