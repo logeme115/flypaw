@@ -395,7 +395,7 @@ class FlyPawPilot(StateMachine):
         #self.currentAttitude = getCurrentAttitude(drone)
         self.currentHeading = drone.heading
 
-        self.RadioEval()
+        #self.RadioEval()
         
         self.EvaluateTaskQ()
 
