@@ -976,6 +976,7 @@ class FlyPawPilot(StateMachine):
             self.taskQ.AppendTask(t)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
+            self.taskQ.PrintQ()
             time.sleep(10)
         #self._RADIO_STRENGTH_SIM()
 
