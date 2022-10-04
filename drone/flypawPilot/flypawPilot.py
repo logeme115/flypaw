@@ -735,7 +735,66 @@ class FlyPawPilot(StateMachine):
         print("exiting")
         sys.exit()
         
+    async def runIperfSync(self, ipaddr, drone: Drone):
+        x = uuid.uuid4()
+        msg = {}
+        msg['uuid'] = str(x)
+        msg['type'] = "iperfResults"
+        msg['iperfResults'] = {}
+        client = iperf3.Client()
 
+        client.server_hostname = ipaddr
+        client.port = 5201
+        client.duration = 3
+        client.json_output = True
+        result = client.run()
+        err = result.error
+        iperfPosition = getCurrentPosition(drone)
+
+        msg['iperfResults']['ipaddr'] = client.server_hostname
+        msg['iperfResults']['port'] = client.port
+        msg['iperfResults']['protocol'] = "tcp"
+        msg['iperfResults']['location4d'] = [ iperfPosition.lat, iperfPosition.lon, iperfPosition.alt, iperfPosition.time ]
+        msg['iperfResults']['heading'] = [ self.currentHeading ]
+        if err is not None:
+            msg['iperfResults']['connection'] = err
+            msg['iperfResults']['mbps'] = None
+            msg['iperfResults']['retransmits'] = None
+            msg['iperfResults']['meanrtt'] = None
+            thistime = datetime.now()
+            unixsecs = datetime.timestamp(thistime)
+            msg['iperfResults']['unixsecs'] = int(unixsecs)
+        else:
+            datarate = result.sent_Mbps
+            retransmits = result.retransmits
+            unixsecs = result.timesecs
+            result_json = result.json
+            meanrtt = result_json['end']['streams'][0]['sender']['mean_rtt']
+            msg['iperfResults']['connection'] = 'ok'
+            msg['iperfResults']['mbps'] = datarate
+            msg['iperfResults']['retransmits'] = retransmits
+            msg['iperfResults']['unixsecs'] = unixsecs
+            msg['iperfResults']['meanrtt'] = meanrtt
+            
+        result_str = json.dumps(msg)
+        with open(self.logfiles['iperf'], "a") as ofile:
+            ofile.write(result_str + "\n")
+            ofile.close()
+            serverReply = udpClientMsg(msg, self.basestationIP, 20001, 2)
+            if serverReply is not None:
+                print(serverReply['uuid_received'])
+                if serverReply['uuid_received'] == str(x):
+                    print(serverReply['type_received'] + " receipt confirmed by UUID")
+                    self.communications['iperf'] = 1
+                else:
+                    print(serverReply['type_received'] + " does not match our message UUID")
+                    self.communications['iperf'] = 0
+            else:
+                print("no reply from server while transmitting iperfResults")
+                self.communications['iperf'] = 0
+        #delete the iperf3 client to avoid errors
+        del client
+        return msg
     
     async def runIperf(self, ipaddr, drone: Drone):
         x = uuid.uuid4()
@@ -797,6 +856,12 @@ class FlyPawPilot(StateMachine):
         #delete the iperf3 client to avoid errors
         del client
         return msg
+
+
+
+
+
+
     #I shouldn't be getting empty missions form the BaseStation
     def processMissionsOLD(self):
         if self.missions :
