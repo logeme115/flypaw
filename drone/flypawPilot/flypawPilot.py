@@ -964,6 +964,7 @@ class FlyPawPilot(StateMachine):
         print("EVALUATE!!!!")
         RadioConnectionWayPoint = Position()
         nextTask = self.taskQ.NextTask()
+        print(str(nextTask))
         self.taskQ.PrintQ() 
         self.RadioEval_SIM()
         radioPosition = Position()
