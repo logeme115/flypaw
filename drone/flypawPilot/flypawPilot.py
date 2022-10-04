@@ -7,6 +7,7 @@ import json
 import time
 import sys
 import os
+from drone.flypawPilot.testPython import runIperf
 import iperf3
 import socket
 import pickle
@@ -394,6 +395,8 @@ class FlyPawPilot(StateMachine):
         
         #self.currentAttitude = getCurrentAttitude(drone)
         self.currentHeading = drone.heading
+
+        self.RadioEval()
         
         self.EvaluateTaskQ()
 
@@ -490,8 +493,8 @@ class FlyPawPilot(StateMachine):
             print("No reply from server.  Drone to decide")
             
         return None
-                
-    @timed_state(name="iperf_old",duration = 20)
+    """
+     @timed_state(name="iperf_old",duration = 20)
     async def iperf_old(self, drone: Drone):
         print("starting iperf state")
         logState(self.logfiles['state'], "iperf")
@@ -537,6 +540,8 @@ class FlyPawPilot(StateMachine):
         return "waypoint_entry"
 
 
+    """            
+   
 
     #IPERF CAN BE THIS QUICK, takes less than 3.5 sec
     @timed_state(name="iperf",duration = 4)
@@ -555,8 +560,7 @@ class FlyPawPilot(StateMachine):
         currentPosition = getCurrentPosition(drone)
         self.radioMap.add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
         #drone.radioMap.lats = currentPosition['lat']
-        print("RadioMapLength:")
-        print(self.radioMap.length)
+
         
         #at the end append all the individual iperf results to the self array
         self.currentIperfObjArr.append(iperfObjArr)
@@ -737,6 +741,33 @@ class FlyPawPilot(StateMachine):
         print("exiting")
         sys.exit()
         
+
+    def RadioEval_SIM (self):
+        x=0
+        self.currentPosition =  getCurrentPosition(self.drone)
+        geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
+        distance_to_radio = geo.get('s12')
+        print("The distance to radio is {:.3f} m.".format(geo['s12']))
+        if distance_to_radio <150:
+            iperfResult = self.runIperfSync(self.basestationIP, self.drone)
+            self.radioMap.add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            print("CONNECTION-GOOD!")
+        else:
+
+            self.radioMap.add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
+            self.communications['iperf'] = 0
+            print("CONNECTION-BAD!")
+        
+
+
+
+
+
+
+    def _RadioBreakSim(self):
+        x = 0
+
+
     def runIperfSync(self, ipaddr, drone: Drone):
         x = uuid.uuid4()
         msg = {}
@@ -797,6 +828,8 @@ class FlyPawPilot(StateMachine):
         #delete the iperf3 client to avoid errors
         del client
         return msg
+
+        
     
     async def runIperf(self, ipaddr, drone: Drone):
         x = uuid.uuid4()
@@ -812,7 +845,7 @@ class FlyPawPilot(StateMachine):
         client.json_output = True
         result = client.run()
         err = result.error
-        iperfPosition = getCurrentPosition(drone)
+        iperfPosition = getCurrentPosition(self.drone)
 
         msg['iperfResults']['ipaddr'] = client.server_hostname
         msg['iperfResults']['port'] = client.port
@@ -902,7 +935,7 @@ class FlyPawPilot(StateMachine):
             taskList.append(tasktemp)
         if objectiveType == "IPERF":
             taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
-            taskList.append(Task(objective.Waypoint,"IPERF",0,0))
+            #taskList.append(Task(objective.Waypoint,"IPERF",0,0))
         if objectiveType == "IMAGE_LOCATION_QUICK":
             taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
             taskList.append(Task(objective.Waypoint,"IMAGE_SINGLE",0,0))
@@ -925,13 +958,10 @@ class FlyPawPilot(StateMachine):
 
         #Check if connection is needed
         print("EVALUATE!!!!")
-        iperfResult =  self.runIperfSync(self.basestationIP, self.Drone)
+        
         nextTask = self.taskQ.NextTask()
-        connection = "no"
-        if self.communications['iperf']:
-            connection = "YES!!!"
-        print("Do we have connection?????????   "+ connection)
-        self._RADIO_STRENGTH_SIM()
+        self.RadioEval_SIM()
+        #self._RADIO_STRENGTH_SIM()
 
 
 
@@ -971,6 +1001,9 @@ class FlyPawPilot(StateMachine):
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
+        if distance_to_radio >150:
+            return False
+        return True
         
     async def reportPositionUDP(self):
         #print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
