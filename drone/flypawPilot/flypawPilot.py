@@ -1018,7 +1018,7 @@ class FlyPawPilot(StateMachine):
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
-        if distance_to_radio >150:
+        if distance_to_radio >300:
             return False
         return True
         
