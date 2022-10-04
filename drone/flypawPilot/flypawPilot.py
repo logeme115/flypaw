@@ -735,7 +735,7 @@ class FlyPawPilot(StateMachine):
         print("exiting")
         sys.exit()
         
-    async def runIperfSync(self, ipaddr, drone: Drone):
+    def runIperfSync(self, ipaddr, drone: Drone):
         x = uuid.uuid4()
         msg = {}
         msg['uuid'] = str(x)
@@ -923,7 +923,7 @@ class FlyPawPilot(StateMachine):
 
         #Check if connection is needed
         print("EVALUATE!!!!")
-        iperfResult =  self.runIperf(self.basestationIP, Drone)
+        iperfResult =  self.runIperfSync(self.basestationIP, Drone)
         nextTask = self.taskQ.NextTask()
 
 
