@@ -971,7 +971,9 @@ class FlyPawPilot(StateMachine):
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         if(self.communications['iperf']==0 and nextTask.comms_required):
             RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,radioPosition)
-            self.taskQ.AppendTask(Task(RadioConnectionWayPoint,"FLIGHT",0,0))
+            t = Task(RadioConnectionWayPoint,"FLIGHT",0,0)
+            t.dynamicTask = True
+            self.taskQ.AppendTask(t)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
             time.sleep(10)
