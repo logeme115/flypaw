@@ -753,7 +753,7 @@ class FlyPawPilot(StateMachine):
         if distance_to_radio <150:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
             self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
-            print("RadioMapLength:"+ self.radioMap.length)
+            print("RadioMapLength:"+ str(self.radioMap.length))
             print("CONNECTION-GOOD!")
         else:
 
