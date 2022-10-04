@@ -575,7 +575,7 @@ class FlyPawPilot(StateMachine):
     #This is a placeholder for the SEND_DATA function-------------------
     @state(name="sendFrame")
     async def sendFrame(self, _ ):
-        print("HitSendFRAME------------------------------------")
+
         logState(self.logfiles['state'], "sendFrame")
         if (self.frame > 1401): #only because the test data has like 1450 frames
             self.frame = 1
