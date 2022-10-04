@@ -743,7 +743,7 @@ class FlyPawPilot(StateMachine):
 
     def RadioEval_SIM (self):
         x=0
-        self.currentPosition =  getCurrentPosition(self.drone)
+        self.currentPosition =  getCurrentPosition(self.Drone)
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
