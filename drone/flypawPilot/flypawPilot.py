@@ -855,6 +855,21 @@ class FlyPawPilot(StateMachine):
     # Evaluates Failed Tasks/ Incomplete tasks as well.
     #In future we will decide here which tasks can be run asynchronously
     def EvaluateTaskQ(self):
+
+        #Check if connection is needed
+        print("EVALUATE!!!!")
+        iperfResult =  self.runIperf(self.basestationIP, Drone)
+        nextTask = self.taskQ.NextTask()
+
+
+
+
+
+
+
+
+
+
         self.taskQ.PrintQ() 
         x= 0
 

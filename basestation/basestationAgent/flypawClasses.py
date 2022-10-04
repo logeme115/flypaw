@@ -193,6 +193,9 @@ class TaskQueue(object):
         elif(self.Count>0): 
             return False
 
+    def NextTask(self):
+        return self.queue[self.Count-1]
+
             
 
 
