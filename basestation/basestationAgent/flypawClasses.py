@@ -160,6 +160,7 @@ class Task(object):
         self.TimeSensitive = sensitive
         self.priority = prio
         self.comms_required = False
+        self.dynamicTask = False
 
 class TaskQueue(object):
 
@@ -181,7 +182,10 @@ class TaskQueue(object):
             print("============")
             print("====TOP\u2193 ===")
             for idx, task in enumerate(self.queue):
-                print("|"+str(task.task).rjust(10," ")+"|")
+                if(task.dynamicTask):
+                    print("|D"+str(task.task).rjust(10,"+")+"|")
+                else:
+                    print("|"+str(task.task).rjust(10," ")+"|")
                 #print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
             print("===BOTTOM===")
             print("============")

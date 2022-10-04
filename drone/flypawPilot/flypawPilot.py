@@ -558,7 +558,7 @@ class FlyPawPilot(StateMachine):
         print(iperfResult['iperfResults'])
         #drone.radioMap['dataRate'] = iperfResult['iperfResults']['mbps']
         currentPosition = getCurrentPosition(drone)
-        self.radioMap.Add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+        #self.radioMap.Add(currentPosition.lat, currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
         #drone.radioMap.lats = currentPosition['lat']
 
         
@@ -972,7 +972,9 @@ class FlyPawPilot(StateMachine):
         if(self.communications['iperf']==0 and nextTask.comms_required):
             RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,radioPosition)
             self.taskQ.AppendTask(Task(RadioConnectionWayPoint,"FLIGHT",0,0))
-            print("No connection...queuing flight to connection returning to nearest point with connection!")
+            print("No connection...queueing flight to connection returning to nearest point with connection!")
+            print("Reprinting Updated Queue...")
+            time.sleep(10)
         #self._RADIO_STRENGTH_SIM()
 
 
