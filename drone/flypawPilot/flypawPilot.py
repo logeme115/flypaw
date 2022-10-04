@@ -1013,14 +1013,7 @@ class FlyPawPilot(StateMachine):
             return "ERROR"
 
 
-    def _RADIO_STRENGTH_SIM(self):
-        x=0
-        geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
-        distance_to_radio = geo.get('s12')
-        print("The distance to radio is {:.3f} m.".format(geo['s12']))
-        if distance_to_radio >300:
-            return False
-        return True
+
         
     async def reportPositionUDP(self):
         #print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
