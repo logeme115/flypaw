@@ -63,6 +63,7 @@ class FlyPawPilot(StateMachine):
         self.CurrentTask =  Task(0,0,0,0)
         self.ActionStatus = ""
         self.Drone = None
+        self.RADIO_RADIUS_SIM = 270 # meters
 
 
         #eNB location
@@ -930,6 +931,7 @@ class FlyPawPilot(StateMachine):
         if self.communications['iperf']:
             connection = "YES!!!"
         print("Do we have connection?????????   "+ connection)
+        self._RADIO_STRENGTH_SIM()
 
 
 
@@ -964,8 +966,11 @@ class FlyPawPilot(StateMachine):
             return "ERROR"
 
 
-
-
+    def _RADIO_STRENGTH_SIM(self):
+        x=0
+        geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
+        distance_to_radio = geo.get('s12')
+        print("The distance to radio is {:.3f} m.".format(geo['s12']))
         
     async def reportPositionUDP(self):
         #print (str(self.currentPosition.lat) + " " + str(self.currentPosition.lon) + " " + str(self.currentPosition.alt) + " " + str(self.currentPosition.time))
