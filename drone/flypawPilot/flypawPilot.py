@@ -160,7 +160,7 @@ class FlyPawPilot(StateMachine):
         Mission Check
         TBD--> develop high level mission overview checks
         """
-        self.missions = getMissions(self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions   
+        self.missions = getMissions(self.currentPosition,self.basestationIP) #should probably include the position and battery and home info when asking for missions... may preclude some missions   
         #print("missionObjective Transfer Check: "+ str(self.missions.missionObjectives))  
         if len(self.missions)<1:
             print("No assignment... will check again in 2 seconds")
@@ -238,7 +238,7 @@ class FlyPawPilot(StateMachine):
 
         #ok, try to accept mission
         print("accepting mission")
-        missionAccepted = acceptMission(self.basestationIP, self.missions[0])
+        missionAccepted = acceptMission(self.currentPosition,self.basestationIP, self.missions[0])
         if missionAccepted:
             print ("Here it is"+  str(self.missions[0].Type) + " mission accepted")
             
@@ -261,7 +261,7 @@ class FlyPawPilot(StateMachine):
         Cloud Resource Info
         """
         print ("check resources")
-        self.resources = getResourceInfo(self.basestationIP)
+        self.resources = getResourceInfo(self.currentPosition,self.basestationIP)
         for resource in self.resources:
             externalIP = None
             for address in resource.resourceAddresses:
@@ -461,6 +461,7 @@ class FlyPawPilot(StateMachine):
         msg = {}
         msg['uuid'] = str(x)
         msg['type'] = "instructionRequest"
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             print(serverReply['uuid_received'])
@@ -641,6 +642,7 @@ class FlyPawPilot(StateMachine):
             msg['uuid'] = str(x)
             msg['type'] = "sendFrame"
             msg['sendFrame'] = {}
+            msg['CUR_POS'] = self.currentPosition
             serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
             if serverReply is not None:
                 print(serverReply['uuid_received'])
@@ -672,6 +674,7 @@ class FlyPawPilot(StateMachine):
         msg['uuid'] = str(x)
         msg['type'] = "sendVideo"
         msg['sendVideo'] = {}
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             print(serverReply['uuid_received'])
@@ -688,6 +691,7 @@ class FlyPawPilot(StateMachine):
         msg['uuid'] = str(x)
         msg['type'] = "collectVideo"
         msg['collectVideo'] = {}
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             print(serverReply['uuid_received'])
@@ -702,6 +706,7 @@ class FlyPawPilot(StateMachine):
         msg = {}
         msg['uuid'] = str(x)
         msg['type'] = "abortMission"
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             print(serverReply['uuid_received'])
@@ -735,6 +740,7 @@ class FlyPawPilot(StateMachine):
         msg = {}
         msg['uuid'] = str(x)
         msg['type'] = "completed"
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             print(serverReply['uuid_received'])
@@ -817,6 +823,7 @@ class FlyPawPilot(StateMachine):
         with open(self.logfiles['iperf'], "a") as ofile:
             ofile.write(result_str + "\n")
             ofile.close()
+            msg['CUR_POS'] = self.currentPosition
             serverReply = udpClientMsg(msg, self.basestationIP, 20001, 2)
             if serverReply is not None:
                 print(serverReply['uuid_received'])
@@ -880,6 +887,7 @@ class FlyPawPilot(StateMachine):
         with open(self.logfiles['iperf'], "a") as ofile:
             ofile.write(result_str + "\n")
             ofile.close()
+            msg['CUR_POS'] = self.currentPosition
             serverReply = udpClientMsg(msg, self.basestationIP, 20001, 2)
             if serverReply is not None:
                 print(serverReply['uuid_received'])
@@ -1064,6 +1072,7 @@ class FlyPawPilot(StateMachine):
             ofile.close()
         
         #print("sending telemetry")
+        msg['CUR_POS'] = self.currentPosition
         serverReply = udpClientMsg(msg, self.basestationIP, 20001, 1)
         if serverReply is not None:
             #print(serverReply) 
@@ -1077,11 +1086,12 @@ class FlyPawPilot(StateMachine):
         return 0
 
     
-def getMissions(basestationIP):
+def getMissions(pos, basestationIP):
     x = uuid.uuid4()
     msg = {}
     msg['uuid'] = str(x)
     msg['type'] = "mission"
+    msg['CUR_POS'] = pos
     serverReply = udpClientMsg(msg, basestationIP, 20001, 2)
     if serverReply is not None:
         print(serverReply['uuid_received'])
@@ -1096,12 +1106,13 @@ def getMissions(basestationIP):
     print("NOOONE!")
     return None
 
-def getResourceInfo(basestationIP):
+def getResourceInfo(pos,basestationIP):
     x = uuid.uuid4()
     msg = {}
     msg['uuid'] = str(x)
     msg['type'] = "resourceInfo"
     #wait up to a minute to get resource info
+    msg['CUR_POS'] = pos
     serverReply = udpClientMsg(msg, basestationIP, 20001, 60)
     if serverReply is not None:
         print(serverReply['uuid_received'])
@@ -1112,7 +1123,7 @@ def getResourceInfo(basestationIP):
                 return resources
     return None
 
-def configureResources(missionLibraries, resource):
+def configureResources(missionLibraries, resource):#FUNCTION NOT USED
     #install any libraries needed for mission
     x = uuid.uuid4()
     msg = {}
@@ -1316,11 +1327,12 @@ def checkEdgeResources(thismission):
     """
     return 1
 
-def acceptMission(basestationIP, thismission):
+def acceptMission(pos,basestationIP, thismission):
     x = uuid.uuid4()
     msg = {}
     msg['uuid'] = str(x)
     msg['type'] = "acceptMission"
+    msg['CUR_POS'] = pos
     #wait up to 20 minutes for cloud resources to be procured after accepting mission
     serverReply = udpClientMsg(msg, basestationIP, 20001, 1200)
     if serverReply is not None:
@@ -1363,6 +1375,7 @@ def logState(logfile, state):
         
 def udpClientMsg(msg, address, port, timeout_in_seconds):
     try:
+
         serialMsg = pickle.dumps(msg)
         serverLoc = (address, port)
         chunkSize = 4096
@@ -1391,6 +1404,8 @@ def udpClientMsg(msg, address, port, timeout_in_seconds):
     except pickle.PicklingError as pe:
         print("Pickle Error--" + pe)
         return None
+
+
 
 def udpFileSend(filename, address, port, buffersz):
     #buffersz could be 1024 or 4096... not sure the best value 

@@ -666,6 +666,212 @@ class FlyPawBasestationAgent(object):
             except pickle.UnpicklingError as upe:
                 print("cannot decode message from drone: " + upe)
 
+    def basestationDispatch_SIM(self):#Simulates an unreliable connection. Doesn't respond if there is no connection
+        UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        UDPServerSocket.bind((self.ipaddr, self.port))
+        print("UDP server up and listening")
+
+        while(True):
+            msgFromServer = {}
+            bytesAddressPair = UDPServerSocket.recvfrom(self.chunkSize)
+            serialClientMessage = bytesAddressPair[0]
+            address = bytesAddressPair[1]
+            try:
+                clientMessage = pickle.loads(serialClientMessage)    
+                print(clientMessage['type'])
+        
+                recvdMsg = "Message from Drone:{}".format(clientMessage)
+                clientIP  = "Drone IP Address:{}".format(address)
+                print(recvdMsg)
+                print(clientIP)
+                recvTime = datetime.now().astimezone().isoformat()
+                msgFromServer['time_received'] = recvTime
+                recvUUID = clientMessage['uuid']
+                msgFromServer['uuid_received'] = recvUUID
+                msgType = clientMessage['type']
+                msgFromServer['type_received'] = msgType
+
+                ##############check message type from drone and decide what to do###################
+                if msgType == "mission":
+                    validMissions = []
+
+                    for ms in self.missions:
+                        if ms.STATUS == "PROCESSED" :
+                            validMissions.append(ms)
+                    print("Dispatcher-- mission check" + str(validMissions[0].missionObjectives))
+                    msgFromServer['missions'] = validMissions
+                    
+                    
+                elif msgType == "acceptMission":
+                    #if you have an outside connection only
+                    if self.missions[0].resources:
+                        #register in ACS  (once it's working move it down below the get resources
+                        
+                        """
+                        ACS registration
+                        """
+                        registered = self.register_acs()
+                        if not registered:
+                            msgFromServer['missionstatus'] = "canceled"
+                            return
+                    
+                        #if we're registered properly...
+                        #get cloud resources and configure to mission
+                        self.cloud_mgr.create()
+                        time.sleep(3)
+                        slices = self.cloud_mgr.get_resources()
+                        for s in slices:
+                            for n in s.get_nodes():
+                                thisResourceInfo = resourceInfo()
+                                thisResourceInfo.name = n.get_name()
+                                thisResourceInfo.location = "KVM@TACC" #extract algorithmically
+                                thisResourceInfo.purpose = "mission" #get from mission somehow
+                            
+                                m_ip = ("management", n.get_management_ip())
+                                e_ip = ("external", n.get_management_ip()) #for fabric these will not be the same 
+                                thisResourceInfo.resourceAddresses.append(m_ip)
+                                thisResourceInfo.resourceAddresses.append(e_ip)
+                                thisResourceInfo.state = n.get_reservation_state()
+                                self.resourceList.append(thisResourceInfo)
+                        print("giving resources 60 seconds to come online")
+                        time.sleep(60)
+
+                    # Now that you have the IP addresses, configure anything on the basestation
+                    fail = configureBasestationProcesses(self.missions[0],self.resourceList)
+                    if (fail):
+                        msgFromServer['missionstatus'] = "canceled"
+
+                        if self.missions[0].resources:
+                            #delete the cloud resources 
+                            for s in slices:
+                                for n in s.get_nodes():
+                                    n.delete()
+                            #self.cloud_mgr.delete()
+                            return
+                    
+                    if self.missions[0].resources:
+                        # now configure nodes...
+                        """
+                        Mission Library Installation on Cloud Nodes
+                        """
+                        missionLibraries = getMissionLibraries(self.missions[0], self.resourceList)
+
+                        for s in slices:
+                            nodeno = 0
+                            for node in s.get_nodes():
+                                nodeName = node.get_name()
+                                print("Install Libraries for nodeName: " + nodeName)
+                                #getRepoStr = "wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/centos-gpg-keys-8-3.el8.noarch.rpm'"
+                                #installRepoStr = "sudo rpm -i 'centos-gpg-keys-8-3.el8.noarch.rpm'"
+                                #swapRepoStr = "sudo dnf -y --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos"
+                                #stdout, stderr = node.execute(getRepoStr)
+                                #print(stdout)
+                                #print(stderr)
+                                #stdout, stderr = node.execute(installRepoStr)
+                                #print(stdout)
+                                #print(stderr)
+                                #stdout, stderr = node.execute(swapRepoStr)
+                                #print(stdout)
+                                #print(stderr)
+                                for library in missionLibraries[nodeno]:
+                                    #libraryInstallStr = "sudo dnf -y install " + library #centos8 
+                                    libraryInstallStr = "sudo yum -y install " + library #centos7
+                                    print(nodeName + ": " + libraryInstallStr)
+                                    stdout, stderr = node.execute(libraryInstallStr)
+                                    print(stdout)
+                                    print(stderr)
+                                nodeno = nodeno + 1
+
+                        #now install and run any preflight commands/configuration on the nodes
+                        # ideally this would be coordinated be done through KubeCtl or something
+                        missionResourcesCommands = getMissionResourcesCommands(self.missions[0],self.resourceList)
+                        for s in slices:
+                            nodeno = 0
+                            for node in s.get_nodes():
+                                nodeName = node.get_name()
+                                print("Run Commands for nodeName: " + nodeName)
+                                for command in missionResourcesCommands[nodeno]:
+                                    print("command: " + command)
+                                    stdout, stderr = node.execute(command)
+                                    print(stdout)
+                                    print(stderr)
+                                nodeno = nodeno + 1
+
+                    msgFromServer['missionstatus'] = "confirmed"
+                    
+                elif msgType == "resourceInfo":
+                    msgFromServer['resources'] = self.resourceList 
+                    
+                elif msgType == "telemetry":
+                    #update your digital twin, update registry, pass on to downstream applications
+                    self.handle_telemetry(clientMessage)
+                    
+                elif msgType == "instructionRequest":
+                    msgFromServer['requests'] = self.currentRequests
+                    self.currentRequests = []
+
+                elif msgType == "iperfResults":
+                    self.iperf3Agent.ipaddr = clientMessage[msgType]['ipaddr']
+                    self.iperf3Agent.port = clientMessage[msgType]['port']
+                    self.iperf3Agent.protocol = clientMessage[msgType]['protocol']
+                    self.iperf3Agent.mbps = clientMessage[msgType]['mbps']
+                    self.iperf3Agent.meanrtt = clientMessage[msgType]['meanrtt']
+                    self.iperf3Agent.location4d = clientMessage[msgType]['location4d']
+                    self.iperfHistory.append(self.iperf3Agent)
+                    if self.iperf3Agent.mbps is not None:
+                        if self.iperf3Agent.mbps > 1:
+                            self.currentRequests.append(self.vehicleCommands.commands['sendFrame'])
+                        else:
+                            self.currentRequests.append(self.vehicleCommands.commands['flight'])
+                    else:
+                        self.currentRequests.append(self.vehicleCommands.commands['flight'])
+                elif msgType == "sendFrame":
+                    self.currentRequests.append(self.vehicleCommands.commands['flight'])
+                elif msgType == "sendVideo":
+                    self.currentRequests.append(self.vehicleCommands.commands['flight'])
+                elif msgType == "abortMission":
+                    print ("mission abort... prepare for landing")
+                elif msgType == "completed":
+                    #download your log files from the cloud
+                    #missionCompletionCommands = getMissionCompletionCommands(self.missions[0],self.resourceList)
+                    if self.missions[0].resources:
+                        for s in slices:
+                            #nodeno = 0
+                            for node in s.get_nodes():
+                                nodeName = node.get_name()
+                                print("Run Commands for nodeName: " + nodeName)
+                                logTime = datetime.now().astimezone().isoformat()
+                                iperfLogfile = "/root/Results/" + nodeName + "_iperf_" + str(logTime) + ".log"
+                                node.download_file(iperfLogfile, "/home/cc/iperf3.txt", retry=3, retry_interval=5)
+                                darknetLogfile = "/root/Results/" + nodeName + "_darknet_" + str(logTime) + ".log"
+                                node.download_file(darknetLogfile, "/home/cc/darknet.log", retry=3, retry_interval=5)
+                            
+                                #for command in missionResourcesCommands[nodeno]:
+                                #    print("command: " + command)
+                                #    stdout, stderr = node.execute(command)
+		                #    print(stdout)
+                                #    print(stderr)
+                                #nodeno = nodeno + 1
+                                print("Deleting: " + nodeName)
+                                nodeDelete = node.delete()
+
+                                # delete the cloud resources
+                                #self.cloud_mgr.delete()
+                    print("flight complete")
+                    sys.exit()
+                else:
+                    print("msgType: " + msgType)
+                    self.currentRequests.append(self.vehicleCommands.commands['flight'])
+                try: 
+                    serialMsgFromServer = pickle.dumps(msgFromServer)
+                    print("Pickle Packet Size: " + str(len(pickle.dumps(msgFromServer,-1))))
+                    UDPServerSocket.sendto(serialMsgFromServer, address)
+                except pickle.PicklingError as pe:
+                    print ("cannot encode reply msg: " + pe)
+                
+            except pickle.UnpicklingError as upe:
+                print("cannot decode message from drone: " + upe)
+
 
 
 
