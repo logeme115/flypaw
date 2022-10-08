@@ -30,7 +30,7 @@ from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
 sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
-from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective
+from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective, WaypointHistory
 #import flypawClasses
 
 
@@ -66,7 +66,7 @@ class FlyPawPilot(StateMachine):
         self.ActionStatus = ""
         self.Drone = None
         self.RADIO_RADIUS_SIM = 270 # meters
-        self.WayPointHistory = WayPointHistory()
+        self.WaypointHistory = WaypointHistory()
 
 
         #eNB location
