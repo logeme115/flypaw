@@ -761,12 +761,12 @@ class FlyPawPilot(StateMachine):
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
         if distance_to_radio <1000:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
-            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'],self.currentPosition.alt)
             self.communications['iperf'] = 1 #I thought this would happen in iperf call....but it doesn't...
             print("RadioMapLength:"+ str(self.radioMap.length))
             print("CONNECTION-GOOD!")
         else:
-            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0,self.currentPosition.alt)
             self.communications['iperf'] = 0
             print("CONNECTION-BAD!")
             #BENCHMARK
@@ -779,12 +779,12 @@ class FlyPawPilot(StateMachine):
         iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
         if self.communications['iperf'] == 1:
 
-            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'],self.currentPosition.alt)
             self.communications['iperf'] = 1 #I thought this would happen in iperf call....but it doesn't...
             print("RadioMapLength:"+ str(self.radioMap.length))
             print("CONNECTION-GOOD!")
         else:
-            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0,self.currentPosition.alt)
             self.communications['iperf'] = 0
             print("CONNECTION-BAD!")
             #BENCHMARK

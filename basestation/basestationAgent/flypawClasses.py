@@ -295,14 +295,14 @@ class RadioMap(object):
         self.dataRate = []
         self.length = 0
         self.positions =[]
-    def Add(self, lat, lon, heading, rate):
+    def Add(self, lat, lon, heading, rate,alt):
         self.lats.append(lat)
         self.lons.append(lon)
         self.headings.append(heading)
         self.dataRate.append(rate)
         self.length = self.length + 1
         pos = Position()
-        pos.InitParams(lon,lat,0,0,0,0)
+        pos.InitParams(lon,lat,alt,0,0,0)
         self.positions.append(pos)
 
 
