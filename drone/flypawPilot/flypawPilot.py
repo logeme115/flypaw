@@ -736,7 +736,7 @@ class FlyPawPilot(StateMachine):
         """
         post flight cleanup
         """
-        self.WayPointHistory.PrintWorkingHistory()
+        self.WaypointHistory.PrintWorkingHistory()
         print("cleaning up")
         logState(self.logfiles['state'], "completed")
         x = uuid.uuid4()
@@ -997,7 +997,7 @@ class FlyPawPilot(StateMachine):
         self.taskQ.PrintQ() 
         self.RadioEval()
         if(self.CurrentTask.task=="FLIGHT"):
-            self.WayPointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
+            self.WaypointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
         radioPosition = Position()
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         if(self.communications['iperf']==0 and nextTask.comms_required):
