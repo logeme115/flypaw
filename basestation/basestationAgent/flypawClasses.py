@@ -241,14 +241,14 @@ class WaypointHistory(object):
 
 
         if(not self._empty()):
-            return self.WaypointsAndConnection(0)
+            return self.WaypointsAndConnection[0]
         else:
             return None
 
 
     def PeekConnectivity(self):
         if(not self._empty()):
-            tuple = self.WaypointsAndConnection(0)
+            tuple = self.WaypointsAndConnection[0]
             return tuple[1]
         else:
             return None
