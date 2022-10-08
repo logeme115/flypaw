@@ -276,7 +276,7 @@ class WaypointHistory(object):
     def PrintWorkingHistory(self):
         print("WorkingHistory:")
         for tuple in self.WaypointsAndConnection:
-            print("ID: "+ tuple[2] + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
+            print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
 
 
 
