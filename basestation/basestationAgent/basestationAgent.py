@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from http import client
 import socket
 import pickle
 import json
@@ -690,6 +691,7 @@ class FlyPawBasestationAgent(object):
                 msgFromServer['uuid_received'] = recvUUID
                 msgType = clientMessage['type']
                 msgFromServer['type_received'] = msgType
+                msgFromServer['drone_position'] = clientMessage['CUR_POS']
 
                 ##############check message type from drone and decide what to do###################
                 if msgType == "mission":

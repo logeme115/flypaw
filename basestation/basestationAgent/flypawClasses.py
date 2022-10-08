@@ -27,6 +27,8 @@ class Position(object):
         self.time = time
         self.fix_type = fix
         self.satellites_visible = satellites
+    def __str__(self):
+        return "(Lat:" + str(self.lat) + " Lon:" + str(self.lon) + " Altitude:" + str(self.alt) + ")"
 
 class Battery(object):
     """
