@@ -29,6 +29,8 @@ class Position(object):
         self.satellites_visible = satellites
     def __str__(self):
         return "(Lat:" + str(self.lat) + " Lon:" + str(self.lon) + " Altitude:" + str(self.alt) + ")"
+    def __repr__(self):
+        return "(Lat:" + str(self.lat) + " Lon:" + str(self.lon) + " Altitude:" + str(self.alt) + ")"
 
 class Battery(object):
     """
