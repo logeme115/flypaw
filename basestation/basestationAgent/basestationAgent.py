@@ -10,6 +10,7 @@ import pytz
 import requests
 import time
 from mobius.controller.controller import Controller
+from geographiclib.geodesic import Geodesic
 
 from flypawClasses import iperfInfo, sendVideoInfo, sendFrameInfo, collectVideoInfo, flightInfo, missionInfo, resourceInfo, VehicleCommands, droneSim, MissionObjective, Position
 
@@ -324,6 +325,9 @@ class FlyPawBasestationAgent(object):
             self.cloud_mgr = Controller(config_file_location="./config.yml")
         else:
             self.cloud_mgr = None
+        RadioPosition = Position()
+        RadioPosition.InitParams(-78.69607,35.72744,0,0,0,0)
+        self.DistanceOfFailure = 300
 
 
 
@@ -460,7 +464,7 @@ class FlyPawBasestationAgent(object):
         else:
             updateResp['registration'] = "FAILED"
         return updateResp['registration']
-            
+    #BASESTATION DISPATCH OLD -----------------VESTIGAL
     def basestationDispatch(self):
         UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         UDPServerSocket.bind((self.ipaddr, self.port))
@@ -667,6 +671,13 @@ class FlyPawBasestationAgent(object):
             except pickle.UnpicklingError as upe:
                 print("cannot decode message from drone: " + upe)
 
+    def DroneDistance(self, dronePosition):
+        geo = Geodesic.WGS84.Inverse(dronePosition.lat, dronePosition.lon, self.RadioPosition.lat, self.RadioPosition.lon)
+        distance_to_base = geo.get('s12')
+        return distance_to_base
+
+
+
     def basestationDispatch_SIM(self):#Simulates an unreliable connection. Doesn't respond if there is no connection
         UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         UDPServerSocket.bind((self.ipaddr, self.port))
@@ -867,7 +878,11 @@ class FlyPawBasestationAgent(object):
                 try: 
                     serialMsgFromServer = pickle.dumps(msgFromServer)
                     print("Pickle Packet Size: " + str(len(pickle.dumps(msgFromServer,-1))))
-                    UDPServerSocket.sendto(serialMsgFromServer, address)
+                    droneDistance = self.DroneDistance()
+                    print("Distance to Drone: "+droneDistance+" m")
+                    if(droneDistance<=self.DistanceOfFailure):
+                        UDPServerSocket.sendto(serialMsgFromServer, address)
+
                 except pickle.PicklingError as pe:
                     print ("cannot encode reply msg: " + pe)
                 
