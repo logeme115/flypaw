@@ -1,3 +1,4 @@
+from ast import Str
 from turtle import position
 
 
@@ -41,6 +42,87 @@ class TaskQueue(object):
             for idx, task in enumerate(self.queue):
                 print("Task#: "+str(idx)+" Lat:"+ str(task.position.lat)+ " Lon:"+ str(task.position.lon)+" Alt:"+ str(task.position.alt) )
 
+class WaypointHistory(object):
+    def __init__(self):
+        self.TrueWaypointsAndConnection =[]
+        self.WaypointsAndConnection = []#list of Tuples (waypoint,connection_status,id)
+        self.Count = 0
+        self.TrueCount = 0
+    def _empty(self):
+        if(self.Count<1):
+            return 1
+        else:
+            return 0
+
+    def AddPoint(self,Waypoint,Connected):#compresses into tuple
+        self.WaypointsAndConnection.insert(0,(Waypoint,Connected,self.TrueCount))
+        self.TrueWaypointsAndConnection.insert(0,(Waypoint,Connected,self.TrueCount))
+        self.Count = self.Count + 1
+        self.TrueCount = self.TrueCount+1
+    def StackPop(self):#return tuple
+        if(not self._empty()):
+            self.Count = self.Count - 1
+            return self.WaypointsAndConnection.pop(0)
+
+        else:
+            return None
+
+    def Peek(self):
+
+
+        if(not self._empty()):
+            return self.WaypointsAndConnection(0)
+        else:
+            return None
+
+
+    def PeekConnectivity(self):
+        if(not self._empty()):
+            tuple = self.WaypointsAndConnection(0)
+            return tuple[1]
+        else:
+            return None
+
+
+    def BackTrackPathForConnectivity(self):
+        Connected = 0
+        print("Count?: "+str(self.Count))
+        StartingLocation = self.StackPop()
+        print("Count2?: "+str(self.Count))
+        StepsBack = []
+        StepsForward = []
+        tasks = []
+        StepsForward.insert(0,StartingLocation)
+        print ("Empty?: "+str(bool(self._empty)))
+        while((not Connected)and (not self._empty)):
+            if(self.PeekConnectivity()):
+                Step = self.StackPop()
+                print("Step Popped: "+ str(Step))
+                StepsBack.append(0,Step)
+                Connected = 1
+            else:
+                Step = self.StackPop()
+                print("Step Popped: "+ str(Step))
+                StepsBack.append(Step)
+                StepsForward.insert(0,Step)
+        if(self._empty and (not Connected)):
+            print("BackTrackError1")
+            return None
+        else:
+            StepsBack.extend(StepsForward)
+            return StepsBack
+    def PrintWorkingHistory(self):
+        print("WorkingHistory:")
+        for tuple in self.TrueWaypointsAndConnection:
+            print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
+
+
+    def PrintListOfStepsGeneric(self,list):
+        for tuple in list:
+            print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
+
+
+    
 
 
 
@@ -94,12 +176,14 @@ def runIperf():
 a = RadioMap()
 p = Position()
 p.InitParams(1,2,3,4,5,6)
-t = Task(p,0,0,0)
-tq = TaskQueue()
-print("tq: "+ str(bool(tq)))
-tq.PrintQ()
-tq.PushTask(t)
-tq.PrintQ()
-print("tq: "+ str(bool(tq)))
+wy = WaypointHistory()
+wy.AddPoint(p,1)
+wy.AddPoint(p,1)
+wy.AddPoint(p,1)
+wy.AddPoint(p,1)
+wy.StackPop()
+print("empty?"+str(bool(wy._empty())))
+if(not wy._empty()):
+    print("wrong")
 
 

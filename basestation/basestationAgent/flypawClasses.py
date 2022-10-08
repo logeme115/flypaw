@@ -263,6 +263,7 @@ class WaypointHistory(object):
         StepsForward = []
         tasks = []
         StepsForward.insert(0,StartingLocation)
+        print("Count3?: "+str(self.Count))
         print ("Empty?: "+str(bool(self._empty)))
         while((not Connected)and (not self._empty)):
             if(self.PeekConnectivity()):
