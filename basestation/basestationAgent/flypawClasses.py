@@ -212,7 +212,7 @@ class TaskQueue(object):
         self.queue.append(task)
         self.Count =  self.Count + 1
 
-class WayPointHistory(object):
+class WaypointHistory(object):
     def __init__(self):
         self.TrueWaypointsAndConnection =[]
         self.WaypointsAndConnection = []#list of Tuples (waypoint,connection_status,id)
