@@ -231,7 +231,9 @@ class WaypointHistory(object):
         self.TrueCount = self.TrueCount+1
     def StackPop(self):#return tuple
         if(not self._empty()):
+            self.Count = self.Count - 1
             return self.WaypointsAndConnection.pop(0)
+
         else:
             return None
 
@@ -256,6 +258,7 @@ class WaypointHistory(object):
         Connected = 0
         print("Count?: "+str(self.Count))
         StartingLocation = self.StackPop()
+        print("Count2?: "+str(self.Count))
         StepsBack = []
         StepsForward = []
         tasks = []
