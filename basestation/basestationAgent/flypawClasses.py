@@ -264,8 +264,8 @@ class WaypointHistory(object):
         tasks = []
         StepsForward.insert(0,StartingLocation)
         print("Count3?: "+str(self.Count))
-        print ("Empty?: "+str(bool(self._empty)))
-        while((not Connected)and (not self._empty)):
+        print ("Empty?: "+str(bool(self._empty())))
+        while((not Connected)and (not self._empty())):
             if(self.PeekConnectivity()):
                 Step = self.StackPop()
                 print("Step Popped: "+ str(Step))
@@ -276,7 +276,7 @@ class WaypointHistory(object):
                 print("Step Popped: "+ str(Step))
                 StepsBack.append(Step)
                 StepsForward.insert(0,Step)
-        if(self._empty and (not Connected)):
+        if(self._empty() and (not Connected)):
             print("BackTrackError1")
             return None
         else:
