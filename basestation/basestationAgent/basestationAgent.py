@@ -328,6 +328,7 @@ class FlyPawBasestationAgent(object):
         RadioPosition = Position()
         RadioPosition.InitParams(-78.69607,35.72744,0,0,0,0)
         self.DistanceOfFailure = 300
+        self.LastKnownDronePosition = self.RadioPosition
 
 
 
