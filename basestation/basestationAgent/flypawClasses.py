@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pickle import FALSE
+from queue import Empty
 from geographiclib.geodesic import Geodesic
 
 
@@ -211,7 +212,77 @@ class TaskQueue(object):
         self.queue.append(task)
         self.Count =  self.Count + 1
 
-            
+class WayPointHistory(object):
+    def __init__(self):
+        self.TrueWaypointsAndConnection =[]
+        self.WaypointsAndConnection = []#list of Tuples (waypoint,connection_status,id)
+        self.Count = 0
+        self.TrueCount = 0
+    def _empty(self):
+        if(self.Count<1):
+            return 1
+        else:
+            return 0
+
+    def AddPoint(self,Waypoint,Connected):#compresses into tuple
+        self.WaypointsAndConnection.insert(0,(Waypoint,Connected,TrueCount))
+        self.TrueWaypointsAndConnection.insert(0,(Waypoint,Connected,TrueCount))
+        Count = Count + 1
+        TrueCount = TrueCount+1
+    def StackPop(self):#return tuple
+        if(not self._empty()):
+            return self.WaypointAndConnection.pop(0)
+        else:
+            return None
+
+    def Peek(self):
+
+
+        if(not self._empty()):
+            return self.WaypointsAndConnection(0)
+        else:
+            return None
+
+
+    def PeekConnectivity(self):
+        if(not self._empty()):
+            tuple = self.WaypointsAndConnection(0)
+            return tuple[1]
+        else:
+            return None
+
+
+    def BackTrackPath(self):
+        Connected = 0
+        StartingLocation = self.StackPop()
+        StepsBack = []
+        StepsForward = []
+        tasks = []
+        StepsForward.insert(0,StartingLocation)
+        while((not Connected)and (not self._empty)):
+            if(self.PeekConnectivity()):
+                Step = self.StackPop()
+                StepsBack.append(0,Step)
+                Connected = 1
+            else:
+                Step = self.StackPop()
+                StepsBack.append(0,Step)
+                StepsForward.insert(0,Step)
+        if(self._empty and (not Connected)):
+            return None
+        else:
+            StepsBack.extend(StepsForward)
+            return StepsBack
+    def PrintWorkingHistory(self):
+        print("WorkingHistory:")
+        for tuple in self.WaypointsAndConnection:
+            print("ID: "+ tuple[2] + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
+
+
+
+    
+
+
 
 
 
@@ -252,4 +323,6 @@ class RadioMap(object):
             
 
         return suggestedPositon
+
+
         

@@ -8,6 +8,7 @@ import json
 import time
 import sys
 import os
+from basestation.basestationAgent.flypawClasses import WayPointHistory
 import iperf3
 import socket
 import pickle
@@ -62,9 +63,11 @@ class FlyPawPilot(StateMachine):
         self.radioMap = RadioMap()
         self.taskQ = TaskQueue()
         self.CurrentTask =  Task(0,0,0,0)
+        self.PreviousTask = None
         self.ActionStatus = ""
         self.Drone = None
         self.RADIO_RADIUS_SIM = 270 # meters
+        self.WayPointHistory = WayPointHistory()
 
 
         #eNB location
@@ -397,7 +400,7 @@ class FlyPawPilot(StateMachine):
         self.currentHeading = drone.heading
 
         #self.RadioEval()
-        
+        self.PreviousTask = self.CurrentTask
         self.EvaluateTaskQ()
 
         #abort mission if Q is empty
@@ -443,7 +446,7 @@ class FlyPawPilot(StateMachine):
 
 
         defaultNextCoord = Coordinate(self.CurrentTask.position.lat,self.CurrentTask.position.lon,self.CurrentTask.position.alt)
-        
+
 
         ##set heading... unnecessary unless we want to have a heading other than the direction of motion 
         #drone.set_heading(bearing_from_here)
@@ -734,6 +737,7 @@ class FlyPawPilot(StateMachine):
         """
         post flight cleanup
         """
+        self.WayPointHistory.PrintWorkingHistory()
         print("cleaning up")
         logState(self.logfiles['state'], "completed")
         x = uuid.uuid4()
@@ -993,6 +997,8 @@ class FlyPawPilot(StateMachine):
         print(str(nextTask))
         self.taskQ.PrintQ() 
         self.RadioEval()
+        if(self.CurrentTask.task=="FLIGHT"):
+            self.WayPointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
         radioPosition = Position()
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         if(self.communications['iperf']==0 and nextTask.comms_required):
