@@ -879,7 +879,7 @@ class FlyPawBasestationAgent(object):
                 try: 
                     serialMsgFromServer = pickle.dumps(msgFromServer)
                     print("Pickle Packet Size: " + str(len(pickle.dumps(msgFromServer,-1))))
-                    droneDistance = self.DroneDistance()
+                    droneDistance = self.DroneDistance(self.LastKnownDronePosition)
                     print("Distance to Drone: "+droneDistance+" m")
                     if(droneDistance<=self.DistanceOfFailure):
                         UDPServerSocket.sendto(serialMsgFromServer, address)
