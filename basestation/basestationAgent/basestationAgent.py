@@ -882,6 +882,8 @@ class FlyPawBasestationAgent(object):
                     print("Distance to Drone: "+droneDistance+" m")
                     if(droneDistance<=self.DistanceOfFailure):
                         UDPServerSocket.sendto(serialMsgFromServer, address)
+                    else:
+                        print("Too far...SimulatingBrokenConnection!")
 
                 except pickle.PicklingError as pe:
                     print ("cannot encode reply msg: " + pe)
