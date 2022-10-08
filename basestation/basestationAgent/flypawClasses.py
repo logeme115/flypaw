@@ -252,7 +252,7 @@ class WaypointHistory(object):
             return None
 
 
-    def BackTrackPath(self):
+    def BackTrackPathForConnectivity(self):
         Connected = 0
         StartingLocation = self.StackPop()
         StepsBack = []
@@ -275,9 +275,13 @@ class WaypointHistory(object):
             return StepsBack
     def PrintWorkingHistory(self):
         print("WorkingHistory:")
-        for tuple in self.WaypointsAndConnection:
+        for tuple in self.TrueWaypointsAndConnection:
             print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
 
+
+    def PrintListOfStepsGeneric(self,list):
+        for tuple in list:
+            print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
 
 
     

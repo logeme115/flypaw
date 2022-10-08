@@ -1002,6 +1002,9 @@ class FlyPawPilot(StateMachine):
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         if(self.communications['iperf']==0 and nextTask.comms_required):
             RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,radioPosition)
+            backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
+            print("BackSteps: ")
+            self.WaypointHistory.PrintListOfStepsGeneric(backSteps)
             t = Task(RadioConnectionWayPoint,"FLIGHT",0,0)
             t.dynamicTask = True
             self.taskQ.AppendTask(t)
