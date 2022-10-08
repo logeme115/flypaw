@@ -225,10 +225,10 @@ class WaypointHistory(object):
             return 0
 
     def AddPoint(self,Waypoint,Connected):#compresses into tuple
-        self.WaypointsAndConnection.insert(0,(Waypoint,Connected,TrueCount))
-        self.TrueWaypointsAndConnection.insert(0,(Waypoint,Connected,TrueCount))
-        Count = Count + 1
-        TrueCount = TrueCount+1
+        self.WaypointsAndConnection.insert(0,(Waypoint,Connected,self.TrueCount))
+        self.TrueWaypointsAndConnection.insert(0,(Waypoint,Connected,self.TrueCount))
+        self.Count = self.Count + 1
+        self.TrueCount = self.TrueCount+1
     def StackPop(self):#return tuple
         if(not self._empty()):
             return self.WaypointAndConnection.pop(0)
