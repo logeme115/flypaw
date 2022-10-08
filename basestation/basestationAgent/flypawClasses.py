@@ -262,6 +262,7 @@ class WaypointHistory(object):
         while((not Connected)and (not self._empty)):
             if(self.PeekConnectivity()):
                 Step = self.StackPop()
+                print("Step Popped: "+ str(Step))
                 StepsBack.append(0,Step)
                 Connected = 1
             else:
