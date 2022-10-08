@@ -254,6 +254,7 @@ class WaypointHistory(object):
 
     def BackTrackPathForConnectivity(self):
         Connected = 0
+        print("Count?: "+str(self.Count))
         StartingLocation = self.StackPop()
         StepsBack = []
         StepsForward = []
