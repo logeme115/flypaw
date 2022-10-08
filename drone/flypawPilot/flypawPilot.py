@@ -756,8 +756,26 @@ class FlyPawPilot(StateMachine):
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
-        if distance_to_radio <150:
+        if distance_to_radio <1000:
             iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
+            self.communications['iperf'] = 1 #I thought this would happen in iperf call....but it doesn't...
+            print("RadioMapLength:"+ str(self.radioMap.length))
+            print("CONNECTION-GOOD!")
+        else:
+            self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,0)
+            self.communications['iperf'] = 0
+            print("CONNECTION-BAD!")
+            #BENCHMARK
+
+    def RadioEval (self):
+        self.currentPosition =  getCurrentPosition(self.Drone)
+        geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
+        distance_to_radio = geo.get('s12')
+        print("The distance to radio is {:.3f} m.".format(geo['s12']))
+        iperfResult = self.runIperfSync(self.basestationIP, self.Drone)
+        if self.communications['iperf'] == 1:
+
             self.radioMap.Add(self.currentPosition.lat, self.currentPosition.lon,self.currentHeading,iperfResult['iperfResults']['mbps'])
             self.communications['iperf'] = 1 #I thought this would happen in iperf call....but it doesn't...
             print("RadioMapLength:"+ str(self.radioMap.length))
@@ -974,7 +992,7 @@ class FlyPawPilot(StateMachine):
         nextTask = self.taskQ.NextTask()
         print(str(nextTask))
         self.taskQ.PrintQ() 
-        self.RadioEval_SIM()
+        self.RadioEval()
         radioPosition = Position()
         radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         if(self.communications['iperf']==0 and nextTask.comms_required):

@@ -704,7 +704,7 @@ class FlyPawBasestationAgent(object):
                 msgType = clientMessage['type']
                 msgFromServer['type_received'] = msgType
                 msgFromServer['drone_position'] = clientMessage['CUR_POS']
-
+                self.LastKnownDronePosition = clientMessage['CUR_POS']
                 ##############check message type from drone and decide what to do###################
                 if msgType == "mission":
                     validMissions = []
