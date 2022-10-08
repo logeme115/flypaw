@@ -231,7 +231,7 @@ class WaypointHistory(object):
         self.TrueCount = self.TrueCount+1
     def StackPop(self):#return tuple
         if(not self._empty()):
-            return self.WaypointAndConnection.pop(0)
+            return self.WaypointsAndConnection.pop(0)
         else:
             return None
 
