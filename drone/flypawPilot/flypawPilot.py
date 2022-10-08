@@ -1004,7 +1004,6 @@ class FlyPawPilot(StateMachine):
             print("Reprinting Updated Queue...")
             self.taskQ.PrintQ()
             time.sleep(10)
-        #self._RADIO_STRENGTH_SIM()
 
 
 
@@ -1016,7 +1015,8 @@ class FlyPawPilot(StateMachine):
 
 
 
-        x= 0
+
+
 
     #Should Validate the Task type exists
     def ValidateTask(self,task:Task): 
