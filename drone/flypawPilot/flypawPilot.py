@@ -8,7 +8,6 @@ import json
 import time
 import sys
 import os
-from basestation.basestationAgent.flypawClasses import WayPointHistory
 import iperf3
 import socket
 import pickle
