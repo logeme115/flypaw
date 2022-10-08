@@ -266,9 +266,10 @@ class WaypointHistory(object):
                 Connected = 1
             else:
                 Step = self.StackPop()
-                StepsBack.append(0,Step)
+                StepsBack.append(Step)
                 StepsForward.insert(0,Step)
         if(self._empty and (not Connected)):
+            print("BackTrackError1")
             return None
         else:
             StepsBack.extend(StepsForward)
