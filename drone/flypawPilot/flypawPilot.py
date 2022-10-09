@@ -1,7 +1,7 @@
 from argparse import Action
 from ast import Str
 from asyncio import tasks
-from turtle import position
+from turtle import back, position
 import requests
 import json
 #import geojson
@@ -1050,9 +1050,9 @@ class FlyPawPilot(StateMachine):
                 taskConversion.append(nextTask)
 
 
+        
 
-
-        return backSteps
+        return taskConversion
 
         
     async def reportPositionUDP(self):
