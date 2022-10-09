@@ -1044,6 +1044,7 @@ class FlyPawPilot(StateMachine):
             t.dynamicTask = True
             taskConversion.append(t)
             if(waypoint[1]):
+                print("Appending Next Task!")
                 taskConversion.append(nextTask)
 
 
