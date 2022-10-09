@@ -67,6 +67,8 @@ class FlyPawPilot(StateMachine):
         self.Drone = None
         self.RADIO_RADIUS_SIM = 270 # meters
         self.WaypointHistory = WaypointHistory()
+        self.RadioPosition = Position()
+        self.RadioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
 
 
         #eNB location
@@ -999,30 +1001,17 @@ class FlyPawPilot(StateMachine):
         self.RadioEval()
         if(self.CurrentTask.task=="FLIGHT"):
             self.WaypointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
-        radioPosition = Position()
-        radioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
+
         if(self.communications['iperf']==0 and nextTask.comms_required):
-            RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,radioPosition)
-            backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
-            print("BackSteps: ")
-            self.WaypointHistory.PrintListOfStepsGeneric(backSteps)
-            t = Task(RadioConnectionWayPoint,"FLIGHT",0,0)
-            t.dynamicTask = True
-            self.taskQ.AppendTask(t)
+            ConnectionPoints = self.GetPathToConnection()
+            for waypoint in ConnectionPoints:          
+                t = Task(waypoint[0],"FLIGHT",0,0)
+                t.dynamicTask = True
+                self.taskQ.AppendTask(t)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
             self.taskQ.PrintQ()
             time.sleep(10)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1047,7 +1036,13 @@ class FlyPawPilot(StateMachine):
         else:
             return "ERROR"
 
+    #STUB----This function will provide mutiple Paths to be evaluated, but right now, will just include one
+    def GetPathToConnection(self):
+        #RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,self.RadioPosition)
+        backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
 
+
+        return backSteps
 
         
     async def reportPositionUDP(self):
