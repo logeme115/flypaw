@@ -1005,6 +1005,7 @@ class FlyPawPilot(StateMachine):
 
         if(self.communications['iperf']==0 and nextTask.comms_required):
             ConnectionSeekingTasks = self.GetPathToConnection()#This should *almost* always find a path.
+            self.taskQ.PopTask()
             self.taskQ.AppendTasks(ConnectionSeekingTasks)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
