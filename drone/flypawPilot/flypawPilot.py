@@ -1036,7 +1036,7 @@ class FlyPawPilot(StateMachine):
         self.WaypointHistory.PrintListOfStepsGeneric(backSteps)
         taskConversion = []
         nextTask = self.taskQ.NextTask()
-        backSteps = backSteps.reverse()
+        backSteps.reverse()
         insertPostion = 0
         for idx, waypoint in enumerate(backSteps):
             print("TASK ID: "+str(waypoint[2]))  
