@@ -175,7 +175,7 @@
                 "type": "SimpleItem"
             },
             {
-                "TASK" : "IPERF",
+                "TASK" : "IMAGE_LOCATION_QUICK",
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
