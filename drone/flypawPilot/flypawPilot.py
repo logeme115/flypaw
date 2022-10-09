@@ -1040,12 +1040,13 @@ class FlyPawPilot(StateMachine):
         insertPostion = 0
         for idx, waypoint in enumerate(backSteps):
             print("TASK ID: "+str(waypoint[2]))  
-            t = Task(waypoint[0],"FLIGHT",0,0)
-            t.dynamicTask = True
-            taskConversion.append(t)
             if(waypoint[1]):
                 print("Appending Next Task!")
                 taskConversion.append(nextTask)
+            t = Task(waypoint[0],"FLIGHT",0,0)
+            t.dynamicTask = True
+            taskConversion.append(t)
+
 
 
         
