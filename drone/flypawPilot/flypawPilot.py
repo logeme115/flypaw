@@ -318,6 +318,7 @@ class FlyPawPilot(StateMachine):
         print("takeoff to " + str(target_alt) + "m")
         await drone.takeoff(target_alt)
         print("reached " + str(target_alt) + "m")
+        self.WaypointHistory.AddPoint(getCurrentPosition(drone),1)#pushes first point to WayPointHistory
         
         #you should be at default_waypoints[1] now
         #with [1] being directly above [0], which is the home position on the ground                                                                                              

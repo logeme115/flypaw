@@ -256,15 +256,11 @@ class WaypointHistory(object):
 
     def BackTrackPathForConnectivity(self):
         Connected = 0
-        print("Count?: "+str(self.Count))
         StartingLocation = self.StackPop()
-        print("Count2?: "+str(self.Count))
         StepsBack = []
         StepsForward = []
         tasks = []
         StepsForward.insert(0,StartingLocation)
-        print("Count3?: "+str(self.Count))
-        print ("Empty?: "+str(bool(self._empty())))
         while((not Connected)and (not self._empty())):
             if(self.PeekConnectivity()):
                 Step = self.StackPop()
@@ -283,7 +279,9 @@ class WaypointHistory(object):
             StepsBack.extend(StepsForward)
             return StepsBack
     def PrintWorkingHistory(self):
-        print("WorkingHistory:")
+        print("History:")
+        print("TrueCount: "+ str(self.TrueCount))
+        print("Working Count: "+ str(self.Count))
         for tuple in self.TrueWaypointsAndConnection:
             print("ID: "+ str(tuple[2]) + " Position: "+ str(tuple[0])+ " Connected: "+ str(bool(tuple[1])))
 
