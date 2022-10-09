@@ -175,10 +175,25 @@ class TaskQueue(object):
     def PushTask(self, task:Task):
         self.queue.insert(0,task)
         self.Count =  self.Count + 1
+    def AppendTask(self, task:Task):
+        self.queue.append(task)
+        self.Count =  self.Count + 1    
+    def AppendTasks(self, tasks):
+        for task in tasks:
+            self.queue.append(task)
+            self.Count =  self.Count + 1  
+
     def PopTask(self):
         if(self.queue):
             self.Count = self.Count-1 #Adjust count
             return self.queue.pop(self.Count)#Pop item at end of queue
+    def EnvelopeNextTask(self,tasks,pos):
+        nextTask = self.PopTask()
+        tasks.insert(nextTask,pos)
+        for task in tasks :
+            self.AppendTask(task)
+
+        
     def PrintQ(self):#change this to lower case please
         if self.Empty():
             print("Empty!")
@@ -278,6 +293,10 @@ class WaypointHistory(object):
         else:
             StepsBack.extend(StepsForward)
             return StepsBack
+
+
+
+            
     def PrintWorkingHistory(self):
         print("History:")
         print("TrueCount: "+ str(self.TrueCount))

@@ -1004,11 +1004,8 @@ class FlyPawPilot(StateMachine):
             self.WaypointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
 
         if(self.communications['iperf']==0 and nextTask.comms_required):
-            ConnectionPoints = self.GetPathToConnection()#This should *almost* always find a path.
-            for waypoint in ConnectionPoints:          
-                t = Task(waypoint[0],"FLIGHT",0,0)
-                t.dynamicTask = True
-                self.taskQ.AppendTask(t)
+            ConnectionSeekingTasks = self.GetPathToConnection()#This should *almost* always find a path.
+            self.taskQ.AppendTasks(ConnectionSeekingTasks)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
             self.taskQ.PrintQ()
@@ -1037,10 +1034,21 @@ class FlyPawPilot(StateMachine):
         else:
             return "ERROR"
 
-    #STUB----This function will provide mutiple Paths to be evaluated, but right now, will just include one
+    #STUB----This function will provide mutiple taskLists to be evaluated, but right now, will just include one
     def GetPathToConnection(self):
         #RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,self.RadioPosition)
         backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
+        taskConversion = []
+        nextTask = self.taskQ.NextTask()
+        insertPostion = 0
+        for idx, waypoint in enumerate(backSteps):  
+            t = Task(waypoint[0],"FLIGHT",0,0)
+            t.dynamicTask = True
+            taskConversion.append(t)
+            if(waypoint[1]):
+                taskConversion.append(nextTask)
+
+
 
 
         return backSteps
