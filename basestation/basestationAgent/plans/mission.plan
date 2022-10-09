@@ -115,7 +115,7 @@
                 "type": "SimpleItem"
             },
             {
-                "TASK" : "IPERF",
+                "TASK" : "IMAGE_LOCATION_QUICK",
                 "AMSLAltAboveTerrain": 30,
                 "Altitude": 30,
                 "AltitudeMode": 1,
@@ -175,7 +175,7 @@
                 "type": "SimpleItem"
             },
             {
-                "TASK" : "IMAGE_LOCATION_QUICK",
+                "TASK" : "IPERF",
                 "AMSLAltAboveTerrain": 60,
                 "Altitude": 60,
                 "AltitudeMode": 1,
