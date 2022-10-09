@@ -67,13 +67,14 @@ class FlyPawPilot(StateMachine):
         self.Drone = None
         self.RADIO_RADIUS_SIM = 270 # meters
         self.WaypointHistory = WaypointHistory()
-        self.RadioPosition = Position()
-        self.RadioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
+
 
 
         #eNB location
         self.radio['lat'] = 35.72744
         self.radio['lon'] = -78.69607
+        self.RadioPosition = Position()
+        self.RadioPosition.InitParams(self.radio['lon'], self.radio['lat'],0,0,0,0)
         
         now = datetime.now()
         current_timestring = now.strftime("%Y%m%d-%H%M%S")
@@ -1003,7 +1004,7 @@ class FlyPawPilot(StateMachine):
             self.WaypointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
 
         if(self.communications['iperf']==0 and nextTask.comms_required):
-            ConnectionPoints = self.GetPathToConnection()
+            ConnectionPoints = self.GetPathToConnection()#This should *almost* always find a path.
             for waypoint in ConnectionPoints:          
                 t = Task(waypoint[0],"FLIGHT",0,0)
                 t.dynamicTask = True
