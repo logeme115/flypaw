@@ -413,13 +413,6 @@ class FlyPawPilot(StateMachine):
             return "abortMission"
 
         
-        """
-        Old waypoint aqcuistion
-        self.nextWaypoint = [] # just grabbing the next waypoint
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][0])
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][1])
-        self.nextWaypoint.append(self.missions[0].default_waypoints[self.currentWaypointIndex + 1][2])
-        """
         self.CurrentTask = self.taskQ.PopTask()
         #print("Task: " + str(self.CurrentTask.task))
        
@@ -1039,6 +1032,8 @@ class FlyPawPilot(StateMachine):
     def GetPathToConnection(self):
         #RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,self.RadioPosition)
         backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
+        print("BackSteps: ")
+        self.WaypointHistory.PrintListOfStepsGeneric(backSteps)
         taskConversion = []
         nextTask = self.taskQ.NextTask()
         insertPostion = 0
