@@ -159,13 +159,26 @@ class taskedWaypoint(object):
         self.TimeSensitive = bool
 
 class Task(object):
-    def __init__(self, pos,task,sensitive,prio):
+    def __init__(self, pos,task,sensitive,prio,uid):
         self.position = pos
         self.task = task
         self.TimeSensitive = sensitive
         self.priority = prio
         self.comms_required = False
         self.dynamicTask = False
+        self.uniqueID = uid
+
+
+#Ensures IDs for tasks are unique and assigned by a third party....maybe I should've just built it into TaskQ, something like, NewEmptyTask()
+class TaskIDGenerator(object):
+    def __init__(self):
+        self.CurrentTaskID= 0
+
+    def Get(self):
+        id = self.CurrentTaskID
+        self.CurrentTaskID = self.CurrentTaskID + 1
+        return id
+    
 
 class TaskQueue(object):
 

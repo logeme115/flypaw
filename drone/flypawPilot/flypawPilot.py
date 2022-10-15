@@ -1,6 +1,8 @@
 from argparse import Action
 from ast import Str
 from asyncio import tasks
+from calendar import c
+from dis import dis
 from turtle import back, position
 import requests
 import json
@@ -30,7 +32,7 @@ from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
 sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
-from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective, WaypointHistory
+from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective, WaypointHistory, TaskIDGenerator
 #import flypawClasses
 
 
@@ -61,12 +63,14 @@ class FlyPawPilot(StateMachine):
         self.frame = 1
         self.radioMap = RadioMap()
         self.taskQ = TaskQueue()
-        self.CurrentTask =  Task(0,0,0,0)
+        self.TaskIDGen = TaskIDGenerator() 
+        self.CurrentTask =  Task(0,0,0,0,self.TaskIDGen.Get())
         self.PreviousTask = None
         self.ActionStatus = ""
         self.Drone = None
         self.RADIO_RADIUS_SIM = 270 # meters
         self.WaypointHistory = WaypointHistory()
+        
 
 
 
@@ -935,7 +939,7 @@ class FlyPawPilot(StateMachine):
                     for waypoint in mission.default_waypoints:
                         position = Position()
                         position.InitParams(waypoint[0],waypoint[1],waypoint[2],0,0,0)
-                        t = Task(position,"FLIGHT",0,0)
+                        t = Task(position,"FLIGHT",0,0,self.TaskIDGen.Get())
                         self.taskQ.PushTask(t)
             return 1
         else:
@@ -961,15 +965,15 @@ class FlyPawPilot(StateMachine):
         taskList = []
         objectiveType = objective.Type
         if objectiveType == "FLIGHT":
-            tasktemp = Task(objective.Waypoint,"FLIGHT",0,0)
+            tasktemp = Task(objective.Waypoint,"FLIGHT",0,0,self.TaskIDGen.Get())
             taskList.append(tasktemp)
         if objectiveType == "IPERF":
-            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
-            #taskList.append(Task(objective.Waypoint,"IPERF",0,0))
+            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0,self.TaskIDGen.Get()))
+            #taskList.append(Task(objective.Waypoint,"IPERF",0,0,self.TaskIDGen.Get()))
         if objectiveType == "IMAGE_LOCATION_QUICK":
-            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0))
-            taskList.append(Task(objective.Waypoint,"IMAGE_SINGLE",0,0))
-            t = Task(objective.Waypoint,"SEND_DATA",0,0)
+            taskList.append(Task(objective.Waypoint,"FLIGHT",0,0,self.TaskIDGen.Get()))
+            taskList.append(Task(objective.Waypoint,"IMAGE_SINGLE",0,0,self.TaskIDGen.Get()))
+            t = Task(objective.Waypoint,"SEND_DATA",0,0,self.TaskIDGen.Get())
             t.comms_required = True
             taskList.append(t)
 
@@ -996,10 +1000,17 @@ class FlyPawPilot(StateMachine):
         if(self.CurrentTask.task=="FLIGHT"):
             self.WaypointHistory.AddPoint(self.currentPosition,self.communications['iperf'])
 
+
+        #this may need a state of its own... reestablish connection
         if(self.communications['iperf']==0 and nextTask.comms_required):
-            ConnectionSeekingTasks = self.GetPathToConnection()#This should *almost* always find a path.
+            ConnectionSeekingTasks = self.GetPathToConnection()#This should *almost*(why did I write almost so speculatively) always find a path.
+            ReccomendedConnectionPath = self.PickPathToRestablish(ConnectionSeekingTasks)
+
+
+
+
             self.taskQ.PopTask()
-            self.taskQ.AppendTasks(ConnectionSeekingTasks)
+            self.taskQ.AppendTasks(ReccomendedConnectionPath)
             print("No connection...queueing flight to connection returning to nearest point with connection!")
             print("Reprinting Updated Queue...")
             self.taskQ.PrintQ()
@@ -1031,6 +1042,10 @@ class FlyPawPilot(StateMachine):
     #STUB----This function will provide mutiple taskLists to be evaluated, but right now, will just include one
     def GetPathToConnection(self):
         #RadioConnectionWayPoint = self.radioMap.FindClosestPointWithConnection(None,self.currentPosition,self.RadioPosition)
+
+
+
+        #BackStep Path! always a pretty safe option
         backSteps = self.WaypointHistory.BackTrackPathForConnectivity()
         print("BackSteps: ")
         self.WaypointHistory.PrintListOfStepsGeneric(backSteps)
@@ -1043,16 +1058,88 @@ class FlyPawPilot(StateMachine):
             if(waypoint[1]):
                 print("Appending Next Task!")
                 taskConversion.append(nextTask)
-            t = Task(waypoint[0],"FLIGHT",0,0)
+            t = Task(waypoint[0],"FLIGHT",0,0,self.TaskIDGen.Get())
             t.dynamicTask = True
             print("TASK ID: "+str(waypoint[2])) 
             taskConversion.append(t)
 
-
+        BackTrackTaskList = taskConversion
+        ForwardSteps = self.FindFowardConnection()
+        taskConversion = []
+        #for now, lets just return a list of two tasks sets, but this should be an object in the future
+        taskConversion.append(BackTrackTaskList)
+        #taskConversion.append(ForwardSteps)
 
         
 
         return taskConversion
+
+    #This should really be managed by a dictionary
+    def TaskListTimeEstimate(self,taskList):
+
+        timeEstimate = 0
+        for task in taskList:
+            if task.task == "FLIGHT" :
+                timeEstimate = timeEstimate + 5
+            elif(task.task == "IMAGE_SINGLE"):
+                timeEstimate = timeEstimate + 1
+            elif(task.task == "SEND_DATA"):
+                timeEstimate = timeEstimate + 3
+        return timeEstimate
+
+
+    def DistanceBetweenTwoPostions(self,posA,posB):
+        geo = Geodesic.WGS84.Inverse(posA.lat, posA.lon, posB.lat, posB.lon)
+        distanceBetweenPoints = geo.get('s12')
+        return distanceBetweenPoints
+
+
+    #Returns the Chance of they're being a connection
+    def ConnectionChance(self,posA):
+        0
+        distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,self.currentPosition)
+        if(distanceToBase<150):
+            return 0.95
+        
+
+    def FindFowardConnection(self):
+        0
+        #shouldn't iterating taskq like this :(
+        ForwardSteps = []
+        qCount = self.taskQ.Count
+        endOfQ = qCount-1
+        iterator = endOfQ
+        while iterator>0:
+            nextTask = self.taskQ.queue[iterator]
+            chanceOfConnection = self.ConnectionChance(nextTask.position)
+            ForwardSteps.append(nextTask)
+            if(chanceOfConnection>0.8):
+                ForwardSteps.append(nextTask)
+                break
+            else:
+                0
+                iterator = iterator - 1
+        
+
+        if(len(ForwardSteps)>0):
+            0
+            ForwardSteps.append(self.taskQ.NextTask())
+        return ForwardSteps
+
+    def PickPathToRestablish(self, taskLists):
+        reccomendedPath = taskLists[0]
+        lowestTimeEstimate = self.TaskListTimeEstimate(reccomendedPath)
+        for path in taskLists:
+            0
+            timeEstimate = self.TaskListTimeEstimate(path)
+            if(lowestTimeEstimate>timeEstimate):
+                0
+                reccomendedPath = path
+                lowestTimeEstimate = timeEstimate
+        return reccomendedPath
+
+
+                
 
         
     async def reportPositionUDP(self):
