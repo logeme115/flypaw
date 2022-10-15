@@ -1098,8 +1098,11 @@ class FlyPawPilot(StateMachine):
     def ConnectionChance(self,posA):
         0
         distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,self.currentPosition)
+        
         if(distanceToBase<150):
             return 0.95
+        else:
+            return 0.0
         
 
     def FindFowardConnection(self):
