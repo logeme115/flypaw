@@ -1117,7 +1117,7 @@ class FlyPawPilot(StateMachine):
         iterator = endOfQ
         DataDependentTask = self.taskQ.queue[endOfQ]
         ConnectionTask = Task(0,0,0,0,0)
-        ReturnFinalTask = Task(DataDependentTask.position,"FLIGHT",0,0,TaskIDGenerator.Get())
+        ReturnFinalTask = Task(DataDependentTask.position,"FLIGHT",0,0,self.TaskIDGen.Get())
         Iterator = Iterator - 1
         while iterator>0:
             nextTask = self.taskQ.queue[iterator]
