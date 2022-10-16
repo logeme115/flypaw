@@ -774,7 +774,7 @@ class FlyPawPilot(StateMachine):
             #BENCHMARK
 
     def RadioEval (self):
-        self.currentPosition =  getCurrentPosition(self.Drone)
+        self.currentPosition =  getCurrentPosition(self.Drone) #Sometimes this returns none...needs to be addressed...broke the program
         geo = Geodesic.WGS84.Inverse(self.currentPosition.lat, self.currentPosition.lon, self.radio['lat'], self.radio['lon'])
         distance_to_radio = geo.get('s12')
         print("The distance to radio is {:.3f} m.".format(geo['s12']))
@@ -1152,7 +1152,7 @@ class FlyPawPilot(StateMachine):
         for path in taskLists:
             0
             timeEstimate = self.TaskListTimeEstimate(path)
-            print("PathTime: "+ timeEstimate)
+            print("PathTime: "+ str(timeEstimate))
             if(lowestTimeEstimate>timeEstimate):
                 0
                 reccomendedPath = path
