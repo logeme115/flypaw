@@ -4,6 +4,7 @@ from asyncio import tasks
 from calendar import c
 from dis import dis
 from turtle import back, position
+from typing import Iterator
 import requests
 import json
 #import geojson
@@ -1062,13 +1063,14 @@ class FlyPawPilot(StateMachine):
             t.dynamicTask = True
             print("TASK ID: "+str(waypoint[2])) 
             taskConversion.append(t)
+        
 
         BackTrackTaskList = taskConversion
         ForwardSteps = self.FindFowardConnection()
         taskConversion = []
         #for now, lets just return a list of two tasks sets, but this should be an object in the future
         taskConversion.append(BackTrackTaskList)
-        #taskConversion.append(ForwardSteps)
+        taskConversion.append(ForwardSteps)
 
         
 
@@ -1104,30 +1106,46 @@ class FlyPawPilot(StateMachine):
         else:
             return 0.0
         
-
+    #finds the closest connection forward, jets over, then continues with normal tasks
     def FindFowardConnection(self):
         0
         #shouldn't iterating taskq like this :(
         ForwardSteps = []
+        TaskPath = []
         qCount = self.taskQ.Count
-        endOfQ = qCount-1
+        endOfQ = (qCount-1)
         iterator = endOfQ
+        DataDependentTask = self.taskQ.queue[endOfQ]
+        ConnectionTask = Task(0,0,0,0,0,0)
+        ReturnFinalTask = Task(DataDependentTask.position,"FLIGHT",0,0,TaskIDGenerator.Get())
+        Iterator = Iterator - 1
         while iterator>0:
             nextTask = self.taskQ.queue[iterator]
-            chanceOfConnection = self.ConnectionChance(nextTask.position)
-            ForwardSteps.append(nextTask)
-            if(chanceOfConnection>0.8):
-                ForwardSteps.append(nextTask)
-                break
-            else:
+            if(nextTask.task == "FLIGHT"):
                 0
-                iterator = iterator - 1
+                chanceOfConnection = self.ConnectionChance(nextTask.position)
+                if(chanceOfConnection>0.8):
+                    ConnectionTask = nextTask
+                    break
+                ForwardSteps.append(nextTask)
+
+            iterator = iterator - 1
         
 
-        if(len(ForwardSteps)>0):
+        if(len(ForwardSteps)>0):#Path exists
             0
-            ForwardSteps.append(self.taskQ.NextTask())
-        return ForwardSteps
+            TaskPath.append(ReturnFinalTask)
+
+            ForwardStepsReverse = ForwardSteps
+            ForwardStepsReverse.reverse()
+            TaskPath.extend(ForwardSteps)
+            TaskPath.append(self.taskQ.NextTask())
+            TaskPath.extend(ForwardStepsReverse)
+            
+        return TaskPath
+
+
+
 
     def PickPathToRestablish(self, taskLists):
         reccomendedPath = taskLists[0]
