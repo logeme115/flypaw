@@ -1122,8 +1122,10 @@ class FlyPawPilot(StateMachine):
             nextTask = self.taskQ.queue[iterator]
             if(nextTask.task == "FLIGHT"):
                 0
+                print("Task:" + str(nextTask.uniqueID))
                 chanceOfConnection = self.ConnectionChance(nextTask.position)
                 if(chanceOfConnection>0.8):
+                    print("ConnectioFound")
                     ConnectionTask = nextTask
                     break
                 ForwardSteps.append(nextTask)
