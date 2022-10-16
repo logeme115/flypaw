@@ -1116,7 +1116,6 @@ class FlyPawPilot(StateMachine):
         endOfQ = (qCount-1)
         iterator = endOfQ
         DataDependentTask = self.taskQ.queue[endOfQ]
-        ConnectionTask = Task(0,0,0,0,0)
         ReturnFinalTask = Task(DataDependentTask.position,"FLIGHT",0,0,self.TaskIDGen.Get())
         iterator = iterator - 1
         while iterator>0:
@@ -1153,6 +1152,7 @@ class FlyPawPilot(StateMachine):
         for path in taskLists:
             0
             timeEstimate = self.TaskListTimeEstimate(path)
+            print("PathTime: "+ timeEstimate)
             if(lowestTimeEstimate>timeEstimate):
                 0
                 reccomendedPath = path
