@@ -1102,6 +1102,7 @@ class FlyPawPilot(StateMachine):
         distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,self.currentPosition)
         
         if(distanceToBase<150):
+            print("GOODCHANCE!")
             return 0.95
         else:
             return 0.0
