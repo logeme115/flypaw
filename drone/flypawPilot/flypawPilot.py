@@ -1158,6 +1158,7 @@ class FlyPawPilot(StateMachine):
             0
             timeEstimate = self.TaskListTimeEstimate(path)
             print("PathTime: "+ str(timeEstimate))
+            self.PrintPath(path)
             if(lowestTimeEstimate>timeEstimate):
                 0
                 reccomendedPath = path
@@ -1165,7 +1166,11 @@ class FlyPawPilot(StateMachine):
         return reccomendedPath
 
 
-                
+    def PrintPath(self,path):
+        0
+        for task in path:
+            0
+            print("Task:"+str(task.uniqueID)+", "+task.task)
 
         
     async def reportPositionUDP(self):
