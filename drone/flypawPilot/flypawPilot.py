@@ -1099,7 +1099,7 @@ class FlyPawPilot(StateMachine):
     #Returns the Chance of they're being a connection
     def ConnectionChance(self,posA):
         0
-        distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,self.currentPosition)
+        distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,posA)
         print("Distance:"+str(distanceToBase))
         if(distanceToBase<150):
             print("GOODCHANCE!")
