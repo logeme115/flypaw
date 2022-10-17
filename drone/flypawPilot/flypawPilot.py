@@ -1136,14 +1136,12 @@ class FlyPawPilot(StateMachine):
         
 
         if(len(ForwardSteps)>0):#Path exists
-            0
             TaskPath.append(ReturnFinalTask)
-
             ForwardStepsReverse = ForwardSteps
             ForwardStepsReverse.reverse()
             TaskPath.extend(ForwardSteps)
-            TaskPath.append(ConnectionTask)
             TaskPath.append(self.taskQ.NextTask())
+            TaskPath.append(ConnectionTask)
             TaskPath.extend(ForwardStepsReverse)
             
         return TaskPath
