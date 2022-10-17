@@ -1070,7 +1070,8 @@ class FlyPawPilot(StateMachine):
         taskConversion = []
         #for now, lets just return a list of two tasks sets, but this should be an object in the future
         taskConversion.append(BackTrackTaskList)
-        taskConversion.append(ForwardSteps)
+        if(len(ForwardSteps)):
+            taskConversion.append(ForwardSteps)
 
         
 
@@ -1135,7 +1136,7 @@ class FlyPawPilot(StateMachine):
             iterator = iterator - 1
         
 
-        if(len(ForwardSteps)>0):#Path exists
+        if(iterator>0):#Path exists
             TaskPath.append(ReturnFinalTask)
             ForwardStepsReverse = ForwardSteps
             ForwardStepsReverse.reverse()
