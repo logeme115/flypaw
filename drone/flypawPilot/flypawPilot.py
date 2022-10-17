@@ -1100,7 +1100,7 @@ class FlyPawPilot(StateMachine):
     def ConnectionChance(self,posA):
         0
         distanceToBase = self.DistanceBetweenTwoPostions(self.RadioPosition,self.currentPosition)
-        
+        print("Distance:"+str(distanceToBase))
         if(distanceToBase<150):
             print("GOODCHANCE!")
             return 0.95
@@ -1116,6 +1116,7 @@ class FlyPawPilot(StateMachine):
         qCount = self.taskQ.Count
         endOfQ = (qCount-1)
         iterator = endOfQ
+        ConnectionTask = Task(0,0,0,0,0)
         DataDependentTask = self.taskQ.queue[endOfQ]
         ReturnFinalTask = Task(DataDependentTask.position,"FLIGHT",0,0,self.TaskIDGen.Get())
         iterator = iterator - 1
@@ -1126,7 +1127,7 @@ class FlyPawPilot(StateMachine):
                 print("Task:" + str(nextTask.uniqueID))
                 chanceOfConnection = self.ConnectionChance(nextTask.position)
                 if(chanceOfConnection>0.8):
-                    print("ConnectioFound")
+                    print("ConnectionFound")
                     ConnectionTask = nextTask
                     break
                 ForwardSteps.append(nextTask)
@@ -1141,6 +1142,7 @@ class FlyPawPilot(StateMachine):
             ForwardStepsReverse = ForwardSteps
             ForwardStepsReverse.reverse()
             TaskPath.extend(ForwardSteps)
+            TaskPath.append(ConnectionTask)
             TaskPath.append(self.taskQ.NextTask())
             TaskPath.extend(ForwardStepsReverse)
             
