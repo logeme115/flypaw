@@ -12,7 +12,7 @@ class Position(object):
     alt: float units M AGL
     time: str, iso8601 currently
     fix_type: int (0..4), 0-1 = no fix, 2 = 2D fix, 3 = 3D fix
-    satellites_visible: int (0..?)
+    satellites_visible: int (0..?)----
     """
     def __init__(self):
         self.lon = float
