@@ -32,7 +32,7 @@ from aerpawlib.util import VectorNED, Coordinate
 from aerpawlib.vehicle import Vehicle
 from aerpawlib.vehicle import Drone
 
-sys.path.append('/root/agrote/flypaw/basestation/basestationAgent')
+sys.path.append('/root/emerson/flypaw/basestation/basestationAgent')
 from flypawClasses import resourceInfo, missionInfo, Position, Battery, RadioMap,TaskQueue,Task, MissionObjective, WaypointHistory, TaskIDGenerator
 #import flypawClasses
 
@@ -62,7 +62,7 @@ class FlyPawPilot(StateMachine):
         self.prometheusQueryURL = "http://" + self.basestationIP + ":9090/api/v1/query?query=" 
         #frame can be used for sendVideo or sendFrame depending on mission type
         self.frame = 1
-        self.radioMap = RadioMap(self)
+        self.radioMap = RadioMap()
         self.taskQ = TaskQueue()
         self.TaskIDGen = TaskIDGenerator() 
         self.CurrentTask =  Task(0,0,0,0,self.TaskIDGen.Get())
